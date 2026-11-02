@@ -1,0 +1,15 @@
+# 백업·압축 파일
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 비밀값
+.env
+.env.*
+
+# 의존성·임시
+node_modules/
+.claude/settings.local.json

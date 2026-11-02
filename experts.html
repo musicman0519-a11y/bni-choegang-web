@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="BNI 고양지역 최강챕터에서 활동하는 분야별 전문가를 찾아보세요." />
+    <meta name="theme-color" content="#a71930" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon-cg.svg" />
+    <title>전문가 찾기 | BNI 고양지역 최강챕터</title>
+    <link rel="stylesheet" href="styles.css?v=44" />
+    <link rel="stylesheet" href="experts.css?v=2" />
+    <script src="supabase-config.js?v=1"></script>
+    <script src="site-data.js?v=1" defer data-scripts="experts.js?v=8 namecard.js?v=4 menu.js?v=1"></script>
+  </head>
+  <body class="experts-page">
+    <a class="skip-link" href="#main">본문 바로가기</a>
+    <div class="notice-bar">
+      <div class="container notice-inner"><span aria-hidden="true">●</span> 고양·일산 지역 대표 비즈니스 네트워크 <a href="visitor.html">비지터 참석 안내 <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="BNI 최강챕터 홈"><img src="assets/images/logo-cg-white.svg" alt="BNI 최강챕터" /></a>
+        <nav class="main-nav" id="mainNav" aria-label="주요 메뉴">
+          <a class="active" href="experts.html" aria-current="page">전문가 찾기</a>
+          <a href="index.html#members">멤버 전체보기</a>
+          <a href="contact.html">협업·문의</a>
+          <a href="about.html">BNI 소개</a>
+          <a href="blog.html">최강챕터 뉴스</a>
+          <a href="visitor.html">참관 신청</a>
+        </nav>
+        <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sideDrawer"><span></span><span></span><span></span></button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="directory-hero">
+        <div class="container">
+          <nav class="breadcrumbs" aria-label="현재 위치"><a href="index.html">홈</a><span aria-hidden="true">/</span><span aria-current="page">전문가 찾기</span></nav>
+          <h1>전문가 찾기</h1>
+          <p>고양·일산 지역 각 분야 전문가를 찾아보세요</p>
+        </div>
+      </section>
+
+      <section class="directory-section">
+        <div class="container directory-layout">
+          <aside class="directory-sidebar" aria-label="전문가 분류">
+            <section class="sidebar-panel">
+              <h2>업종 카테고리</h2>
+              <div class="sidebar-categories" role="group" aria-label="업종 카테고리 필터">
+                <button class="sidebar-filter is-active" type="button" data-category="all"><span aria-hidden="true">▦</span>전체</button>
+                <button class="sidebar-filter" type="button" data-category="Consultant"><span aria-hidden="true">♟</span>Consultant</button>
+                <button class="sidebar-filter" type="button" data-category="Medical"><span aria-hidden="true">⚕</span>Medical</button>
+                <button class="sidebar-filter" type="button" data-category="Life event"><span aria-hidden="true">♙</span>Life event</button>
+                <button class="sidebar-filter" type="button" data-category="Finance & Insurance"><span aria-hidden="true">◈</span>Finance &amp; Insurance</button>
+                <button class="sidebar-filter" type="button" data-category="Social cooperative"><span aria-hidden="true">♧</span>Social cooperative</button>
+                <button class="sidebar-filter" type="button" data-category="Marketing & Photo & IT"><span aria-hidden="true">▣</span>Marketing &amp; Photo &amp; IT</button>
+                <button class="sidebar-filter" type="button" data-category="Architecture & Interior"><span aria-hidden="true">⌂</span>Architecture &amp; Interior</button>
+                <button class="sidebar-filter" type="button" data-category="Beauty & Tatoo & Hair"><span aria-hidden="true">✂</span>Beauty &amp; Tatoo &amp; Hair</button>
+                <button class="sidebar-filter" type="button" data-category="Food & Beverage"><span aria-hidden="true">♜</span>Food &amp; Beverage</button>
+                <button class="sidebar-filter" type="button" data-category="Power Team"><span aria-hidden="true">♣</span>Power Team</button>
+              </div>
+            </section>
+            <section class="sidebar-panel region-panel">
+              <h2>지역 필터</h2>
+              <p>멤버의 상세 활동 지역은 운영진 확인 후 업데이트됩니다.</p>
+              <a href="contact.html">지역별 전문가 문의하기 <span aria-hidden="true">→</span></a>
+            </section>
+          </aside>
+
+          <div class="directory-content">
+            <form class="directory-search" role="search">
+              <label class="sr-only" for="expertSearch">회사명, 이름, 업종 검색</label>
+              <input id="expertSearch" type="search" placeholder="회사명, 이름, 업종으로 검색..." autocomplete="off" />
+              <button type="submit" aria-label="검색">⌕</button>
+            </form>
+            <div class="directory-toolbar">
+              <p aria-live="polite">총 <strong id="expertCount">0</strong>명의 전문가</p>
+              <label class="sr-only" for="expertSort">정렬 방법</label>
+              <select id="expertSort">
+                <option value="default">기본순</option>
+                <option value="name">이름순</option>
+                <option value="category">업종순</option>
+              </select>
+            </div>
+            <div class="directory-chips" role="group" aria-label="전문 분야 빠른 검색">
+              <button class="directory-chip" type="button" data-query="민사">변호사 민사</button>
+              <button class="directory-chip" type="button" data-query="반영구문신">반영구문신</button>
+              <button class="directory-chip" type="button" data-query="피부과">피부과</button>
+              <button class="directory-chip" type="button" data-query="꽃">꽃 배달</button>
+              <button class="directory-chip" type="button" data-query="사회적협동조합">사회적협동조합</button>
+              <button class="directory-chip" type="button" data-query="사진 영상">사진촬영</button>
+              <button class="directory-chip" type="button" data-query="온라인광고">온라인마케팅</button>
+              <button class="directory-chip" type="button" data-query="대물 보험">대물보험</button>
+              <button class="directory-chip" type="button" data-query="상업 인테리어">상업 건축/인테리어</button>
+              <button class="directory-chip" type="button" data-query="인테리어">건축/인테리어</button>
+              <button class="directory-chip" type="button" data-query="형사">변호사 형사</button>
+              <button class="directory-chip" type="button" data-query="보청기">보청기</button>
+              <button class="directory-chip" type="button" data-query="연금보험">연금보험</button>
+              <button class="directory-chip" type="button" data-query="세무">세무자문</button>
+              <button class="directory-chip" type="button" data-query="한의원">한의원</button>
+              <button class="directory-chip" type="button" data-query="앱개발">앱·웹 개발</button>
+              <button class="directory-chip" type="button" data-query="덴트">덴트·도색</button>
+              <button class="directory-chip" type="button" data-query="간판 사이니지">간판·사이니지 제작</button>
+              <button class="directory-chip" type="button" data-query="보험">보험 상담·판매</button>
+              <button class="directory-chip" type="button" data-query="금융서비스">금융서비스</button>
+              <button class="directory-chip" type="button" data-query="기업">기업 세무</button>
+              <button class="directory-chip" type="button" data-query="정비">차량정비</button>
+              <button class="directory-chip" type="button" data-query="법률">법률상담</button>
+              <button class="directory-chip" type="button" data-query="화재보험">화재보험</button>
+              <button class="directory-chip" type="button" data-query="방문요양">방문요양</button>
+              <button class="directory-chip" type="button" data-query="주방설비">업소용 종합주방설비</button>
+              <button class="directory-chip" type="button" data-query="치과">치과</button>
+              <button class="directory-chip" type="button" data-query="조경">조화·플랜테리어·조경</button>
+              <button class="directory-chip" type="button" data-query="신차 리스">신차·중고차·리스</button>
+              <button class="directory-chip" type="button" data-query="장기렌트카">장기렌트카</button>
+              <button class="directory-chip" type="button" data-query="시니어 케어">시니어 케어</button>
+              <button class="directory-chip" type="button" data-query="누수">누수·수리</button>
+              <button class="directory-chip" type="button" data-query="상조">상조서비스</button>
+              <button class="directory-chip" type="button" data-query="청소">종합·특수청소</button>
+              <button class="directory-chip" type="button" data-query="헤어디자이너">헤어디자이너</button>
+              <button class="directory-chip" type="button" data-query="휴대폰 통신">휴대폰·통신·전자기기</button>
+            </div>
+            <div class="expert-grid" id="expertGrid">
+            </div>
+            <p class="directory-empty" id="directoryEmpty" hidden>검색 결과가 없습니다. 다른 이름이나 분야를 검색해 주세요.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="directory-cta">
+        <div class="container">
+          <h2>찾는 전문가가 없으신가요?</h2>
+          <p>BNI 최강챕터에 문의해 주시면 적합한 전문가 연결을 도와드립니다.</p>
+          <a class="button button-light" href="contact.html"><span aria-hidden="true">♟</span> 문의하기</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-main">
+        <div class="footer-about">
+          <a class="footer-title" href="index.html"><img src="assets/images/logo-cg-white.svg" alt="BNI 최강챕터" /></a>
+          <p>고양·일산 지역 대표 비즈니스 네트워크 플랫폼입니다.</p>
+          <p>각 분야 전문가들이 함께합니다.</p>
+        </div>
+        <nav class="footer-col" aria-label="전문 분야">
+          <h2>전문 분야</h2>
+          <a href="experts.html?category=Consultant">Consultant</a>
+          <a href="experts.html?category=Medical">Medical</a>
+          <a href="experts.html?category=Life%20event">Life event</a>
+          <a href="experts.html?category=Finance%20%26%20Insurance">Finance &amp; Insurance</a>
+          <a href="experts.html?category=Social%20cooperative">Social cooperative</a>
+          <a href="experts.html?category=Marketing%20%26%20Photo%20%26%20IT">Marketing &amp; Photo &amp; IT</a>
+          <a href="experts.html?category=Architecture%20%26%20Interior">Architecture &amp; Interior</a>
+          <a href="experts.html?category=Beauty%20%26%20Tatoo%20%26%20Hair">Beauty &amp; Tatoo &amp; Hair</a>
+          <a href="experts.html?category=Food%20%26%20Beverage">Food &amp; Beverage</a>
+          <a href="experts.html?category=Power%20Team">Power Team</a>
+        </nav>
+        <nav class="footer-col" aria-label="빠른 링크">
+          <h2>빠른 링크</h2>
+          <a href="index.html#members">멤버 전체보기</a>
+          <a href="visitor.html">참관 신청</a>
+          <a href="about.html">BNI 소개</a>
+          <a href="about.html#system">BNI 시스템</a>
+          <a href="blog.html">최강챕터 뉴스</a>
+        </nav>
+        <nav class="footer-col footer-contact" aria-label="문의">
+          <h2>문의</h2>
+          <a href="visitor.html#meetingInfoTitle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>고양시 일산서구 킨텍스로 255-3</a>
+          <a href="visitor.html#meetingInfoTitle"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>매주 수요일 조찬모임</a>
+          <a href="visitor.html#visitor-application"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1a6.5 6.5 0 0 1 13 0v1ZM19 8v6M16 11h6"/></svg>조찬모임 참석</a>
+          <a href="contact.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-3-3M19 16H5l3 3"/></svg>협업 문의</a>
+          <a href="about.html#chapter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2Z"/><path d="M9 4v14M15 6v14"/></svg>활동 지역</a>
+        </nav>
+      </div>
+      <div class="container footer-bottom">
+        <small>모임 시간·장소·참석 자격은 방문 전에 운영진에게 확인해 주세요.</small>
+        <small>© 2026 BNI 최강챕터. All rights reserved.</small>
+      </div>
+    </footer>
+  </body>
+</html>

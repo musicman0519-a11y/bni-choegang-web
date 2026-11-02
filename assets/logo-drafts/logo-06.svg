@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" role="img" aria-label="최강챕터 로고 시안 06">
+  <defs><path id="ring06" d="M150 150 m-104 0 a104 104 0 1 1 208 0 a104 104 0 1 1 -208 0"/></defs>
+  <circle cx="150" cy="150" r="132" fill="#C8102E"/>
+  <circle cx="150" cy="150" r="80" fill="#fff"/>
+  <text font-family="'Montserrat','Arial Black','Segoe UI',Arial,sans-serif" font-weight="800" font-size="17" fill="#fff" letter-spacing="5"><textPath href="#ring06" startOffset="2%">BNI CHOEGANG CHAPTER · GOYANG · ILSAN ·</textPath></text>
+  <text x="150" y="152" text-anchor="middle" font-family="'Pretendard','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif" font-weight="900" font-size="46" fill="#C8102E" letter-spacing="-2">최강</text>
+  <text x="150" y="182" text-anchor="middle" font-family="'Montserrat','Arial Black','Segoe UI',Arial,sans-serif" font-weight="800" font-size="13" fill="#1B1F27" letter-spacing="4">CHAPTER</text>
+</svg>

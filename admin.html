@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon-cg.svg" />
+    <title>관리자 | BNI 최강챕터</title>
+    <link rel="stylesheet" href="admin.css?v=4" />
+    <script src="supabase-config.js?v=1"></script>
+    <script src="admin-demo.js?v=2"></script>
+    <script src="site-data.js?v=1" defer data-scripts="experts.js?v=8 blog-data.js?v=2 admin.js?v=4"></script>
+  </head>
+  <body>
+    <!-- 로그인 -->
+    <main class="login-screen" id="loginScreen" hidden>
+      <form class="login-card" id="loginForm">
+        <img src="assets/images/logo-cg.svg" alt="BNI 최강챕터" />
+        <h1>관리자 로그인</h1>
+        <label>이메일<input name="email" type="email" autocomplete="username" required /></label>
+        <label>비밀번호<input name="password" type="password" autocomplete="current-password" required /></label>
+        <label id="passwordConfirmField" hidden>비밀번호 확인<input name="password2" type="password" autocomplete="new-password" minlength="8" /></label>
+        <button class="btn btn-primary" type="submit" id="loginSubmit">로그인</button>
+        <button class="btn btn-ghost" type="button" id="signupToggle">처음이신가요? 계정 만들기</button>
+        <p class="form-message" id="loginMessage" role="alert"></p>
+      </form>
+    </main>
+
+    <!-- 설정 안내 -->
+    <main class="login-screen" id="setupScreen" hidden>
+      <div class="login-card setup-card">
+        <img src="assets/images/logo-cg.svg" alt="BNI 최강챕터" />
+        <h1>Supabase 연결이 필요해요</h1>
+        <p><code>supabase-config.js</code> 파일에 Supabase 주소와 anon 키를 넣으면 관리자 페이지를 쓸 수 있어요. 자세한 순서는 <code>supabase/관리자_설정_안내.md</code> 를 보세요.</p>
+        <a class="btn btn-primary" href="admin.html?demo">데모로 둘러보기</a>
+        <a class="btn btn-ghost" href="index.html">홈페이지로</a>
+      </div>
+    </main>
+
+    <!-- 관리자 화면 -->
+    <div class="admin" id="adminApp" hidden>
+      <aside class="admin-side">
+        <a class="admin-brand" href="index.html" target="_blank" rel="noopener" title="홈페이지 새 창으로 열기"><img src="assets/images/logo-cg-white.svg" alt="BNI 최강챕터" /><span>관리자</span></a>
+        <nav class="admin-tabs" role="tablist" aria-label="관리 메뉴" aria-orientation="vertical">
+          <button type="button" role="tab" data-tab="inquiries" aria-selected="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4Z"/></svg><span>문의 <b class="tab-count" id="newInquiryCount" hidden></b></span></button>
+          <button type="button" role="tab" data-tab="members" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19v-1a5.5 5.5 0 0 1 11 0v1"/><path d="M16 5.5a3 3 0 0 1 0 5.8M17 14a4.5 4.5 0 0 1 3.5 4.4v.6"/></svg><span>멤버</span></button>
+          <button type="button" role="tab" data-tab="posts" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg><span>최강챕터 뉴스</span></button>
+          <button type="button" role="tab" data-tab="banners" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-8 8"/></svg><span>메인 배너</span></button>
+          <button type="button" role="tab" data-tab="schedule" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></svg><span>일정</span></button>
+          <button type="button" role="tab" data-tab="admins" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span>관리자 계정</span></button>
+        </nav>
+        <div class="admin-user"><span id="adminEmail"></span><button class="btn btn-ghost" type="button" id="logoutButton">로그아웃</button></div>
+      </aside>
+      <div class="admin-main">
+
+      <p class="demo-bar" id="demoBar" hidden>데모 모드예요. 화면 구성을 둘러보는 용도라 바꾼 내용은 저장되지 않고, 새로고침하면 처음으로 돌아가요. <a href="admin.html">실제 관리자로</a></p>
+
+      <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+      <!-- 문의 -->
+      <section class="panel" data-panel="inquiries">
+        <div class="panel-head">
+          <div><h2>비지터 · 협업 문의</h2><p>홈페이지 신청서로 들어온 문의입니다. 연락을 마친 문의는 '처리 완료'로 바꿔 두세요.</p></div>
+          <div class="panel-tools">
+            <select id="inquiryKind" aria-label="문의 종류"><option value="">전체 종류</option><option value="visitor">비지터 신청</option><option value="collab">협업 문의</option></select>
+            <select id="inquiryStatus" aria-label="처리 상태"><option value="">전체 상태</option><option value="new" selected>새 문의</option><option value="done">처리 완료</option></select>
+          </div>
+        </div>
+        <div class="inquiry-list" id="inquiryList"></div>
+      </section>
+
+      <!-- 멤버 -->
+      <section class="panel" data-panel="members" hidden>
+        <div class="panel-head">
+          <div><h2>멤버 관리</h2><p>사진·명함·홈페이지 링크·등급·직급을 여기서 관리하면 홈페이지 전체(멤버 목록, 의장단, 골드·그린클럽, 전문가 찾기, 명함보기)에 반영됩니다.</p></div>
+          <div class="panel-tools">
+            <input type="search" id="memberSearch" placeholder="이름·회사 검색" aria-label="멤버 검색" />
+            <button class="btn btn-primary" type="button" id="addMemberButton">+ 멤버 추가</button>
+          </div>
+        </div>
+        <div class="seed-box" id="memberSeed" hidden>
+          <p>아직 등록된 멤버가 없어요. 지금 홈페이지에 있는 멤버 <b id="staticMemberCount"></b>명을 그대로 가져올까요?</p>
+          <button class="btn btn-line" type="button" id="seedMembersButton">기존 멤버 가져오기</button>
+        </div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>사진</th><th>이름</th><th>회사 · 직함</th><th>업종</th><th>등급 · 직급</th><th>명함 · 홈페이지</th><th>공개</th><th></th></tr></thead><tbody id="memberRows"></tbody></table></div>
+      </section>
+
+      <!-- 뉴스 -->
+      <section class="panel" data-panel="posts" hidden>
+        <div class="panel-head">
+          <div><h2>최강챕터 뉴스</h2><p>뉴스·멤버 소개 글을 쓰거나 고칠 수 있어요. 영상(유튜브) 주소나 대표 이미지를 넣으면 카드와 글에 함께 나옵니다. 최신 글 4개는 메인 페이지에도 보여요.</p></div>
+          <div class="panel-tools"><button class="btn btn-primary" type="button" id="addPostButton">+ 새 뉴스 쓰기</button></div>
+        </div>
+        <div class="seed-box" id="postSeed" hidden>
+          <p>아직 등록된 글이 없어요. 지금 뉴스에 있는 글 <b id="staticPostCount"></b>개를 가져올까요?</p>
+          <button class="btn btn-line" type="button" id="seedPostsButton">기존 글 가져오기</button>
+        </div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>제목</th><th>분류</th><th>멤버</th><th>날짜</th><th>공개</th><th></th></tr></thead><tbody id="postRows"></tbody></table></div>
+      </section>
+
+      <!-- 메인 배너 -->
+      <section class="panel" data-panel="banners" hidden>
+        <div class="panel-head">
+          <div><h2>메인 배너 사진</h2><p>홈페이지 맨 위 배너에 6초마다 바뀌어 나오는 사진입니다. 가로 1920px 이상 넓은 사진을 권장해요.</p></div>
+          <div class="panel-tools"><label class="btn btn-primary file-button">+ 사진 올리기<input type="file" id="bannerUpload" accept="image/*" multiple hidden /></label></div>
+        </div>
+        <div class="seed-box" id="bannerSeed" hidden>
+          <p>등록된 배너 사진이 없어서 지금은 기본 사진 3장이 나오고 있어요. 기본 사진도 목록에 넣어 함께 관리할까요?</p>
+          <button class="btn btn-line" type="button" id="seedBannersButton">기본 사진 가져오기</button>
+        </div>
+        <div class="banner-grid" id="bannerGrid"></div>
+      </section>
+
+      <!-- 일정 -->
+      <section class="panel" data-panel="schedule" hidden>
+        <div class="panel-head">
+          <div><h2>모임 일정</h2><p>매주 수요일 '조찬회의'는 자동으로 표시돼요. 휴회·화상회의·행사처럼 다른 날만 등록하세요.</p></div>
+        </div>
+        <form class="schedule-form" id="scheduleForm">
+          <label>날짜<input name="date" type="date" required /></label>
+          <label>종류<select name="type"><option value="meeting">조찬회의</option><option value="online">화상회의</option><option value="off">회의없음</option><option value="event">행사</option></select></label>
+          <label>표시 문구<input name="label" type="text" maxlength="12" placeholder="예: 회의없음" required /></label>
+          <label class="wide">메모 (선택)<input name="note" type="text" maxlength="20" placeholder="예: 연말 휴회" /></label>
+          <button class="btn btn-primary" type="submit">등록</button>
+        </form>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>날짜</th><th>종류</th><th>표시 문구</th><th>메모</th><th></th></tr></thead><tbody id="scheduleRows"></tbody></table></div>
+      </section>
+
+      <!-- 관리자 계정 -->
+      <section class="panel" data-panel="admins" hidden>
+        <div class="panel-head">
+          <div><h2>관리자 계정</h2><p>여기에 이메일을 등록한 사람만 관리자 페이지를 쓸 수 있어요. 등록된 사람은 관리자 로그인 화면의 <b>'처음이신가요? 계정 만들기'</b>에서 같은 이메일로 비밀번호를 정하면 됩니다.</p></div>
+        </div>
+        <form class="schedule-form admin-add-form" id="adminAddForm">
+          <label>이메일<input name="email" type="email" required placeholder="new-admin@example.com" /></label>
+          <label class="wide">이름 · 메모 (선택)<input name="note" maxlength="40" placeholder="예: 홍길동 부의장" /></label>
+          <button class="btn btn-primary" type="submit">관리자 추가</button>
+        </form>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>이메일</th><th>이름 · 메모</th><th>등록일</th><th></th></tr></thead><tbody id="adminRows"></tbody></table></div>
+      </section>
+      </div>
+    </div>
+
+    <!-- 멤버 편집 -->
+    <dialog class="editor" id="memberEditor">
+      <form id="memberForm" method="dialog">
+        <div class="editor-head"><h2 id="memberEditorTitle">멤버 추가</h2><button class="icon-button" type="button" data-close aria-label="닫기">×</button></div>
+        <div class="editor-body form-grid">
+          <label>이름 *<input name="name" required maxlength="20" /></label>
+          <label>업종 *<select name="category" required></select></label>
+          <label>회사명<input name="company" maxlength="60" /></label>
+          <label>직함<input name="title" maxlength="20" placeholder="대표" /></label>
+          <label class="wide">소개 문구<textarea name="description" rows="2" maxlength="200"></textarea></label>
+          <label class="wide">키워드 <small>쉼표(,)로 구분 · 첫 번째 키워드가 명함 제목이 됩니다</small><input name="tags" placeholder="반영구문신, 눈썹문신, 헤어문신" /></label>
+          <label>등급<select name="grade"><option value="">없음</option><option>GOLD CLUB</option><option>GREEN CLUB</option><option>GREEN LIGHT</option></select></label>
+          <label>직급 <small>의장단 카드에 표시</small><input name="rank" maxlength="10" placeholder="예: 의장, 부의장, ST" /></label>
+          <label class="wide">홈페이지 주소<input name="homepage" type="url" placeholder="https://" /></label>
+          <div class="upload-field">
+            <span>프로필 사진</span>
+            <img class="upload-preview" id="memberPhotoPreview" alt="" />
+            <label class="btn btn-line file-button">사진 선택<input type="file" name="photoFile" accept="image/*" hidden /></label>
+          </div>
+          <div class="upload-field">
+            <span>명함 이미지</span>
+            <img class="upload-preview wide-preview" id="memberCardPreview" alt="" />
+            <label class="btn btn-line file-button">명함 선택<input type="file" name="namecardFile" accept="image/*" hidden /></label>
+            <button class="btn btn-ghost" type="button" id="clearNamecard">명함 지우기</button>
+          </div>
+          <label>정렬 순서 <small>작을수록 앞</small><input name="sort_order" type="number" value="100" /></label>
+          <label class="check"><input name="is_active" type="checkbox" checked /> 홈페이지에 공개</label>
+        </div>
+        <div class="editor-foot"><button class="btn btn-danger" type="button" id="deleteMemberButton">삭제</button><span></span><button class="btn btn-ghost" type="button" data-close>취소</button><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </dialog>
+
+    <!-- 블로그 편집 -->
+    <dialog class="editor editor-wide" id="postEditor">
+      <form id="postForm" method="dialog">
+        <div class="editor-head"><h2 id="postEditorTitle">새 글 쓰기</h2><button class="icon-button" type="button" data-close aria-label="닫기">×</button></div>
+        <div class="editor-body form-grid">
+          <label class="wide">제목 *<input name="title" required maxlength="80" placeholder="SMP 두피문신·뷰티 — 노블엠 김하정 대표" /></label>
+          <label>분류<select name="category"><option>멤버소개</option><option>주간회의</option><option>파워팀소개</option><option>121후기</option><option>일상소개</option></select></label>
+          <label>주소 아이디 <small>영문·숫자·- 만</small><input name="id" required pattern="[a-z0-9-]+" maxlength="60" placeholder="kim-hajeong" /></label>
+          <label>멤버<select name="member"><option value="">선택 안 함</option></select></label>
+          <label>카드 배지<input name="badge" maxlength="30" placeholder="일산 SMP 두피문신 전문가" /></label>
+          <label>회사명<input name="company" maxlength="60" /></label>
+          <label>직함<input name="role" maxlength="20" placeholder="대표" /></label>
+          <label>목록 날짜<input name="date" maxlength="10" placeholder="2026.10" /></label>
+          <label>게시일<input name="published_at" maxlength="20" placeholder="2026. 10. 13." /></label>
+          <label>전문분야<input name="profile_field" maxlength="40" /></label>
+          <label>핵심역량<input name="profile_strength" maxlength="40" /></label>
+          <label>활동지역<input name="profile_area" maxlength="60" placeholder="고양, 일산, 파주" /></label>
+          <label>멤버 지역 <small>글 하단 멤버 카드</small><input name="region" maxlength="30" /></label>
+          <label class="wide">영상 주소 <small>유튜브 링크를 붙여넣으면 글 안에 영상이 들어가요</small><input name="video_url" type="url" placeholder="https://www.youtube.com/watch?v=..." /></label>
+          <div class="upload-field wide">
+            <span>대표 이미지 <small>뉴스 카드에 보일 사진 · 없으면 영상 썸네일이나 멤버 사진이 나와요</small></span>
+            <img class="upload-preview wide-preview" id="postCoverPreview" alt="" />
+            <label class="btn btn-line file-button">이미지 선택<input type="file" name="coverFile" accept="image/*" hidden /></label>
+            <button class="btn btn-ghost" type="button" id="clearCover">이미지 지우기</button>
+          </div>
+          <label class="wide">강조 문구 <small>본문 위 빨간 줄 박스</small><input name="lead" maxlength="200" /></label>
+          <label class="wide">본문 <small>빈 줄로 문단 구분 · 줄 맨 앞 "## " = 소제목 · **굵게**</small><textarea name="body" rows="14"></textarea></label>
+          <label class="check"><input name="is_published" type="checkbox" checked /> 홈페이지에 공개</label>
+        </div>
+        <div class="editor-foot"><button class="btn btn-danger" type="button" id="deletePostButton">삭제</button><a class="btn btn-ghost" id="viewPostLink" target="_blank" rel="noopener">글 보기</a><span></span><button class="btn btn-ghost" type="button" data-close>취소</button><button class="btn btn-primary" type="submit">저장</button></div>
+      </form>
+    </dialog>
+  </body>
+</html>

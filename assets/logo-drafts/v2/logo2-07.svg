@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" width="520" height="140" role="img" aria-label="최강챕터 로고 2차 시안 07">
+  <polygon points="12,56 46,56 46,112 12,112 26,84" fill="#8E0F24"/>
+  <polygon points="474,56 508,56 494,84 508,112 474,112" fill="#8E0F24"/>
+  <rect x="38" y="28" width="444" height="72" rx="6" fill="#C8102E"/>
+  <polygon points="78.0,52.0 80.9,60.0 89.4,60.3 82.8,65.5 85.1,73.7 78.0,69.0 70.9,73.7 73.2,65.5 66.6,60.3 75.1,60.0" fill="#E3A51A"/>
+  <polygon points="442.0,52.0 444.9,60.0 453.4,60.3 446.8,65.5 449.1,73.7 442.0,69.0 434.9,73.7 437.2,65.5 430.6,60.3 439.1,60.0" fill="#E3A51A"/>
+  <text x="260" y="80" text-anchor="middle" font-family="'Pretendard','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif" font-weight="900" font-size="42" fill="#fff" letter-spacing="-1">BNI 최강챕터</text>
+  <text x="260" y="128" text-anchor="middle" font-family="'Montserrat','Arial Black','Segoe UI',Arial,sans-serif" font-weight="700" font-size="12" fill="#6B7280" letter-spacing="6">GOYANG · ILSAN · SINCE BNI KOREA</text>
+</svg>
