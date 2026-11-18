@@ -253,7 +253,7 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
 
   // ── 옛 주소 리다이렉트 (공개 URL 에서만 404.html 이 동작) ──
   if (/github\.io/.test(BASE)) {
-    for (const [from, to] of [["blog/weekly-meeting-20260513", "post.html?id=weekly-meeting-20260513"], ["members.html", "experts.html"], ["collaborate.html", "contact.html"], ["blogs.html", "blog.html"]]) {
+    for (const [from, to] of [["blog/weekly-meeting-20260513", "blog/weekly-meeting-20260513/"], ["blog/no-such-post-xyz", "post.html?id=no-such-post-xyz"], ["members.html", "experts.html"], ["collaborate.html", "contact.html"], ["blogs.html", "blog.html"]]) {
       await test(`옛 주소 /${from} → ${to}`, async () => {
         const page = await browser.newPage();
         await page.goto(BASE + from, { waitUntil: "networkidle0", timeout: 60000 });
