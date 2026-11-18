@@ -251,6 +251,45 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     await page.close();
   });
 
+
+  // ── 실 DB 모드 (supabase-config.js 에 연결 정보가 있을 때만) ──
+  {
+    const probe = await open("index.html");
+    const configured = await probe.evaluate(() => Boolean(window.siteConfigured));
+    await probe.close();
+    if (configured) {
+      await test("실 DB: 홈이 Supabase 멤버 데이터로 렌더된다(siteMembers 29명 이상)", async () => {
+        const page = await open("index.html");
+        const n = await page.evaluate(() => (window.siteMembers || []).length);
+        expect(n >= 29, `siteMembers ${n}`);
+        await page.close();
+        return `${n}명`;
+      });
+      await test("실 DB: 참관 신청 폼 제출 → '접수되었습니다' (테스트 건은 관리자 문의 탭에서 삭제)", async () => {
+        const page = await open("visitor.html");
+        await page.type('#visitorForm [name="name"]', "자동테스트 삭제요망");
+        await page.type('#visitorForm [name="phone"]', "010-0000-0000");
+        await page.type('#visitorForm [name="message"]', `e2e 자동 테스트 ${new Date().toISOString()} — 관리자 페이지에서 삭제해 주세요`);
+        await page.click('#visitorForm [type="submit"]');
+        await page.waitForFunction(() => { const s = document.querySelector("#visitorFormStatus"); return s && !s.hidden && s.textContent.trim(); }, { timeout: 20000 });
+        const msg = await page.$eval("#visitorFormStatus", (el) => el.textContent.trim());
+        expect(/접수되었습니다/.test(msg), msg);
+        await page.close();
+        return msg.slice(0, 20);
+      });
+      await test("실 DB: 필수값(이름·전화) 비우면 브라우저가 제출을 막는다", async () => {
+        const page = await open("visitor.html");
+        await page.click('#visitorForm [type="submit"]');
+        const invalid = await page.$eval("#visitorForm", (f) => !f.checkValidity());
+        const shown = await page.$eval("#visitorFormStatus", (el) => !el.hidden && el.textContent.trim().length > 0).catch(() => false);
+        expect(invalid && !shown, `invalid=${invalid} statusShown=${shown}`);
+        await page.close();
+      });
+    } else {
+      results.push(["SKIP", "실 DB 모드 3건 — supabase-config.js 미연결이라 건너뜀", ""]);
+    }
+  }
+
   // ── 옛 주소 리다이렉트 (공개 URL 에서만 404.html 이 동작) ──
   if (/github\.io|choegang\.co\.kr/.test(BASE)) {
     for (const [from, to] of [["blog/weekly-meeting-20260513", "blog/weekly-meeting-20260513/"], ["blog/no-such-post-xyz", "post.html?id=no-such-post-xyz"], ["members.html", "experts.html"], ["collaborate.html", "contact.html"], ["blogs.html", "blog.html"]]) {
@@ -265,9 +304,9 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
   }
 
   await browser.close();
-  const pass = results.filter((r) => r[0] === "PASS").length, fail = results.length - pass;
+  const pass = results.filter((r) => r[0] === "PASS").length, skip = results.filter((r) => r[0] === "SKIP").length, fail = results.length - pass - skip;
   console.log(`\n대상: ${BASE}`);
-  for (const [s, name, d] of results) console.log(`${s === "PASS" ? "✔" : "✘"} ${s}  ${name}${d ? "  — " + d : ""}`);
+  for (const [s, name, d] of results) console.log(`${s === "PASS" ? "✔" : s === "SKIP" ? "–" : "✘"} ${s}  ${name}${d ? "  — " + d : ""}`);
   console.log(`\n결과: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch((e) => { console.error("테스트 실행 오류:", e); process.exit(2); });

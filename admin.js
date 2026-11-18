@@ -418,20 +418,7 @@
       loaders.posts();
     }
   });
-  // 기존 글의 HTML 본문을 어드민 본문 형식(빈 줄 문단, ## 소제목, **굵게**)으로 바꿉니다.
-  const htmlToText = (html) => {
-    const box = document.createElement("div");
-    box.innerHTML = html || "";
-    const toPlain = (html) => {
-      const text = html.replace(/<strong>(.*?)<\/strong>/g, "**$1**").replace(/<br\s*\/?>/g, "\n").replace(/<[^>]+>/g, "").trim();
-      return new DOMParser().parseFromString(text, "text/html").documentElement.textContent;
-    };
-    return [...box.children].map((el) => {
-      if (el.tagName === "UL" || el.tagName === "OL") return [...el.children].map((li) => `- ${toPlain(li.innerHTML)}`).join("\n");
-      const plain = toPlain(el.innerHTML);
-      return el.tagName === "H2" || el.tagName === "H3" ? `## ${plain}` : plain;
-    }).filter(Boolean).join("\n\n");
-  };
+  const htmlToText = window.htmlToText; // body-format.js
   $("#seedPostsButton").addEventListener("click", async () => {
     const rows = (window.staticPosts || []).map((p, index) => ({
       id: p.id, category: p.category, badge: p.badge || "", title: p.title, member: p.member || null, role: p.role || null,

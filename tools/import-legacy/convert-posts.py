@@ -171,6 +171,8 @@ def clean_html(raw):
             blocks.append(f"<p>{chunk}</p>")
     out = "\n".join(blocks)
     out = re.sub(r"<p>\s*</p>", "", out)
+    out = re.sub(r"<h[23]>(?:\s|<br>)*</h[23]>", "", out)  # 내용 없는 소제목
+    out = re.sub(r"<(strong|em)>\s*</\1>", "", out)         # 내용 없는 강조
     out = re.sub(r"<li>\s*</li>", "", out)
     out = re.sub(r"<(ul|ol)>\s*</\1>", "", out)
     return out, re.sub(r"\s+", " ", c.lead).strip()

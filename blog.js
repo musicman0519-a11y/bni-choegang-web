@@ -6,13 +6,7 @@
   const members = new Map((window.chapterMembers || []).map((member) => [member.name, member]));
   const photo = (name) => (members.has(name) ? window.memberPhoto(members.get(name)) : `assets/images/member-${name}.jpg`);
   const escapeHtml = (text) => String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  // 어드민에서 쓴 본문을 HTML 로 바꿉니다: 빈 줄 = 문단, "## " = 소제목, **굵게**
-  const formatBody = (text) => String(text || "").split(/\n\s*\n/).map((block) => {
-    const trimmed = block.trim();
-    const html = escapeHtml(trimmed).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br />");
-    if (!html) return "";
-    return trimmed.startsWith("## ") ? `<h2>${html.replace(/^##\s+/, "")}</h2>` : `<p>${html}</p>`;
-  }).join("\n");
+  const formatBody = window.formatBody; // body-format.js (빈 줄 문단, ##/### 소제목, - 목록, **굵게**)
   const calendarIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></svg>';
 
   // 영상 주소 → 유튜브 아이디
