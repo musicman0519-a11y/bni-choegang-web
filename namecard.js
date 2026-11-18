@@ -5,7 +5,7 @@
   const memberByName = new Map(chapterMembers.map((member) => [member.name, member]));
 
   // 홈페이지 버튼: experts.js 에 homepage 주소가 있으면 그 사이트(새 창)로,
-  // 아직 없으면 전문가 찾기의 해당 멤버 프로필로 연결합니다.
+  // 아직 없으면 그 멤버의 프로필 페이지(member/<이름>/)로 연결합니다.
   document.querySelectorAll("[data-homepage]").forEach((link) => {
     const name = link.dataset.homepage;
     const url = memberByName.get(name)?.homepage;
@@ -14,7 +14,8 @@
       link.target = "_blank";
       link.rel = "noopener";
     } else {
-      link.href = `experts.html?q=${encodeURIComponent(name)}`;
+      link.href = `member/${encodeURIComponent(name)}/`;
+      link.textContent = "프로필 보기";
     }
   });
 

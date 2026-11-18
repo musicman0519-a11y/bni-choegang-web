@@ -101,7 +101,11 @@
     category.className = "expert-category";
     category.textContent = expert.category;
     const name = document.createElement("h2");
-    name.textContent = expert.name;
+    const nameLink = document.createElement("a");
+    nameLink.href = `member/${encodeURIComponent(expert.name)}/`;
+    nameLink.textContent = expert.name;
+    nameLink.title = `${expert.name} 프로필 보기`;
+    name.append(nameLink);
     const company = document.createElement("p");
     company.className = "expert-company";
     company.textContent = expert.company;

@@ -1,0 +1,115 @@
+{
+  "origin": "https://musicman0519-a11y.github.io/bni-choegang-web",
+  "name": "BNI 고양지역 최강챕터",
+  "shortName": "BNI 최강챕터",
+  "description": "고양·일산 비즈니스 조찬 네트워크 BNI 최강챕터. 업종별 전문가 29명이 매주 수요일 아침 킨텍스 인근에서 만나 소개·추천·협업합니다. 비지터 참관 신청 안내.",
+  "locale": "ko_KR",
+  "ogImage": "assets/images/og-image.jpg",
+  "logo": "assets/images/main-logo.png",
+  "address": {
+    "street": "킨텍스로 255-3",
+    "locality": "고양시 일산서구",
+    "region": "경기도",
+    "country": "KR"
+  },
+  "meeting": {
+    "weekday": "Wednesday",
+    "start": "06:30",
+    "end": "08:30",
+    "label": "매주 수요일 오전 6:30 ~ 8:30 조찬모임"
+  },
+  "areaServed": [
+    "고양시",
+    "일산",
+    "파주",
+    "김포",
+    "의정부",
+    "서울 은평구"
+  ],
+  "sameAs": [
+    "https://www.instagram.com/bnichoegang",
+    "https://cafe.naver.com/goyangpowerful",
+    "https://www.bni.com/"
+  ],
+  "localBusinessMatch": "병원|의원|클리닉|한의원|치과|피부과|보청기|휴대폰|통신|헤어|살롱|요양",
+  "pages": [
+    {
+      "path": "",
+      "file": "index.html",
+      "priority": "1.0",
+      "changefreq": "weekly",
+      "ld": "home",
+      "title": "BNI 고양지역 최강챕터 | 조찬모임 고양·일산",
+      "description": "고양·일산 비즈니스 조찬 네트워크 BNI 최강챕터. 업종별 전문가 29명이 매주 수요일 아침 모여 소개·추천·협업합니다. 비지터 참관 신청과 업종별 전문가 찾기 안내."
+    },
+    {
+      "path": "experts.html",
+      "file": "experts.html",
+      "priority": "0.9",
+      "changefreq": "weekly",
+      "ld": "experts",
+      "crumb": "전문가 찾기",
+      "title": "고양·일산 업종별 전문가 찾기 | BNI 최강챕터",
+      "description": "변호사·세무사·치과·한의원·인테리어·보험·자동차 등 고양·일산·파주·김포 지역 전문가 29명을 업종별로 찾아보세요. BNI 최강챕터 멤버 디렉터리와 명함."
+    },
+    {
+      "path": "visitor.html",
+      "file": "visitor.html",
+      "priority": "0.9",
+      "changefreq": "monthly",
+      "ld": "visitor",
+      "crumb": "참관 신청",
+      "title": "BNI 조찬모임 비지터 참관 신청 | 고양·일산 최강챕터",
+      "description": "매주 수요일 오전 6:30 킨텍스 인근에서 열리는 BNI 최강챕터 조찬모임에 비지터로 참석해 보세요. 일시·장소·준비물 안내와 참관 신청."
+    },
+    {
+      "path": "contact.html",
+      "file": "contact.html",
+      "priority": "0.8",
+      "changefreq": "monthly",
+      "ld": "page",
+      "crumb": "협업 문의",
+      "title": "비즈니스 협업·전문가 연결 문의 | BNI 최강챕터",
+      "description": "고양·일산 BNI 최강챕터 멤버와 파트너십·리퍼럴·국내외 비즈니스 협업을 문의하세요. 업종별 전문가를 연결해 드립니다."
+    },
+    {
+      "path": "about.html",
+      "file": "about.html",
+      "priority": "0.8",
+      "changefreq": "monthly",
+      "ld": "page",
+      "crumb": "BNI 소개",
+      "title": "BNI 소개, 최강챕터는 어떤 모임인가요 | BNI 최강챕터",
+      "description": "BNI(Business Network International)와 Givers Gain 철학, BNI 시스템, 고양·일산 최강챕터의 운영 방식과 참여 방법을 소개합니다."
+    },
+    {
+      "path": "blog.html",
+      "file": "blog.html",
+      "priority": "0.8",
+      "changefreq": "weekly",
+      "ld": "page",
+      "crumb": "최강챕터 뉴스",
+      "title": "최강챕터 뉴스 · 주간회의·멤버소개·121후기 | BNI 최강챕터",
+      "description": "BNI 최강챕터의 주간회의 기록, 멤버 사업 소개, 파워팀, 121 후기와 행사 소식을 모았습니다."
+    },
+    {
+      "path": "post.html",
+      "file": "post.html",
+      "priority": "0.3",
+      "changefreq": "weekly",
+      "ld": "none",
+      "robots": "noindex, follow",
+      "sitemap": false,
+      "title": "최강챕터 뉴스 | BNI 고양지역 최강챕터",
+      "description": "BNI 고양지역 최강챕터 뉴스 상세 페이지입니다. 주간회의·멤버 소개·121 후기 글의 정본 주소는 blog/글주소/ 이며 이 페이지는 색인하지 않습니다."
+    },
+    {
+      "path": "admin.html",
+      "file": "admin.html",
+      "ld": "none",
+      "robots": "noindex, nofollow",
+      "sitemap": false,
+      "meta": "robots-only"
+    }
+  ]
+}

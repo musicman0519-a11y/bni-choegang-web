@@ -1,5 +1,8 @@
 (() => {
   const posts = window.blogPosts || [];
+  // 글 주소: 빌드로 정적 페이지가 생기는 글(staticPosts)은 blog/<id>/, DB 에만 있는 글은 post.html?id=
+  const staticIds = new Set((window.staticPosts || []).map((p) => p.id));
+  const postHref = (post) => (staticIds.has(post.id) ? `blog/${encodeURIComponent(post.id)}/` : `post.html?id=${encodeURIComponent(post.id)}`);
   const members = new Map((window.chapterMembers || []).map((member) => [member.name, member]));
   const photo = (name) => (members.has(name) ? window.memberPhoto(members.get(name)) : `assets/images/member-${name}.jpg`);
   const escapeHtml = (text) => String(text ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -43,7 +46,7 @@
   if (homeNews) {
     const latest = posts.slice(0, 4);
     homeNews.innerHTML = latest.map((post) => `
-      <a class="news-tile" href="post.html?id=${encodeURIComponent(post.id)}">
+      <a class="news-tile" href="${postHref(post)}">
         <span class="news-tile-media"><img src="${escapeHtml(coverOf(post))}" alt="" loading="lazy" />${post.video ? playIcon : ""}</span>
         <h3>${escapeHtml(post.title)}</h3>
         <span class="news-tile-source">(${escapeHtml(sourceOf(post))})</span>
@@ -61,7 +64,7 @@
     const empty = document.querySelector("#blogEmpty");
 
     grid.innerHTML = posts.map((post) => `
-      <a class="blog-card" href="post.html?id=${encodeURIComponent(post.id)}" data-category="${escapeHtml(post.category)}">
+      <a class="blog-card" href="${postHref(post)}" data-category="${escapeHtml(post.category)}">
         <div class="blog-card-photo${post.cover || post.video ? " is-cover" : ""}"><img src="${escapeHtml(coverOf(post))}" alt="" loading="lazy" />${post.video ? playIcon : ""}</div>
         <div class="blog-card-body">
           ${post.badge ? `<span class="blog-badge">${escapeHtml(post.badge)}</span>` : ""}
@@ -89,8 +92,14 @@
   // 상세 페이지
   const article = document.querySelector("#blogPost");
   if (article) {
-    const id = new URLSearchParams(location.search).get("id");
+    const id = window.postId || new URLSearchParams(location.search).get("id");
     const post = posts.find((item) => item.id === id);
+    if (post && staticIds.has(post.id) && !window.postId) {
+      // post.html?id= 로 열린 정적 글: 정본 주소(blog/<id>/)를 canonical 로 알린다
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.append(link); }
+      link.href = new URL(postHref(post), document.baseURI).href;
+    }
     if (!post) {
       article.innerHTML = '<a class="post-back" href="blog.html">← 뉴스 목록</a><h1 class="post-title">글을 찾을 수 없습니다</h1><p>주소가 바뀌었거나 삭제된 글입니다. 블로그 목록에서 다시 찾아 주세요.</p>';
       return;
@@ -138,7 +147,7 @@
         </div>
         <div class="post-member-actions">
           <a class="primary" href="contact.html">전문가 연결 문의</a>
-          <a href="experts.html?q=${encodeURIComponent(post.member)}">챕터 프로필</a>
+          <a href="member/${encodeURIComponent(post.member)}/">챕터 프로필</a>
         </div>
       </div>` : ""}
       <div class="post-bottom-actions">

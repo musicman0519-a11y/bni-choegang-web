@@ -1,0 +1,26 @@
+# BNI 고양지역 최강챕터 — https://musicman0519-a11y.github.io/bni-choegang-web
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /post.html
+Disallow: /tools/
+Disallow: /docs/
+Disallow: /supabase/
+
+# AI 검색 크롤러 — 공개 콘텐츠 허용 (관리자 페이지 제외)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin.html
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin.html
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin.html
+User-agent: Google-Extended
+Allow: /
+
+# AI 요약용 사이트 설명: https://musicman0519-a11y.github.io/bni-choegang-web/llms.txt
+Sitemap: https://musicman0519-a11y.github.io/bni-choegang-web/sitemap.xml

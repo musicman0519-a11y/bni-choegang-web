@@ -9,12 +9,20 @@
 - `supabase/schema.sql` 테이블·RLS·Storage 버킷 / `supabase/functions/notify-inquiry/` 문의 알림 Edge Function / `supabase/*_안내.md` 운영자용 설정 안내
 - `assets/images/` 멤버 사진은 `member-<이름>.jpg` 규칙으로 `experts.js` 가 찾음 / `assets/logo-drafts/` 로고 시안
 - `docs/plans/` 작업 계획 체크리스트 (`/plan` → `/build` 로 진행)
+- `site.config.json` 사이트 주소·이름·주소·모임시간·페이지별 title/description. **도메인이 바뀌면 `origin` 만 고치고 `npm run build`**
+- `tools/build/prerender.js` 노출 파일 생성기: 정적 페이지 `<head>` 의 `<!-- meta:start/end -->`·`<!-- ld:start/end -->` 블록, `blog/<글id>/index.html`, `member/<이름>/index.html`, `sitemap.xml`, `robots.txt`, `llms.txt`. 생성물은 커밋한다
+- `blog-legacy.js` 옛 홈페이지 글 44건(자동 생성, 직접 수정 금지). 원본은 `E:\projects\_backupni_clean`, 재생성은 `tools/import-legacy/convert-posts.py`
+- `tools/e2e/` 브라우저 테스트(puppeteer-core + 설치된 Chrome). `npm test`(로컬) / `npm run test:public`
 
 ## 로컬 실행·확인
 ```
 python -m http.server 8080 --bind 127.0.0.1   # 프로젝트 루트에서. file:// 로 열면 데이터 로딩 안 됨
 ```
 http://127.0.0.1:8080/ 에서 확인. 화면 확인은 Chrome 헤드리스 `--screenshot` 으로도 가능.
+
+## 글·멤버를 고친 뒤 할 일
+`blog-data.js`·`blog-legacy.js`·`experts.js`·`site.config.json`·정적 HTML 의 FAQ 를 고치면 **`npm run build`** 를 돌려 정적 페이지·사이트맵·llms.txt 를 다시 만들고 함께 커밋한다. 두 번 돌려도 결과가 같아야 한다(멱등).
+글의 정본 주소는 `blog/<id>/`, 멤버는 `member/<이름>/`. `post.html?id=` 는 DB 에만 있는 글용이며 canonical 로 정본을 가리킨다.
 
 ## 배포
 - GitHub Pages, `main` 브랜치 root 에서 배포. 푸시하면 1~2분 뒤 반영.

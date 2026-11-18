@@ -69,12 +69,12 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     expect(name === "박성찬", "이름 " + name);
     await page.close();
   });
-  await test("홈페이지 버튼: 윤성기는 네이버 플레이스 새 창, 박정호(링크 없음)는 프로필로", async () => {
+  await test("홈페이지 버튼: 윤성기는 네이버 플레이스 새 창, 박정호(링크 없음)는 member/박정호/ 프로필 페이지로", async () => {
     const page = await open("experts.html");
     const a = await page.$eval('[data-homepage="윤성기"]', (el) => ({ href: el.href, target: el.target }));
     const b = await page.$eval('[data-homepage="박정호"]', (el) => el.getAttribute("href"));
     expect(/map\.naver\.com/.test(a.href) && a.target === "_blank", JSON.stringify(a));
-    expect(/experts\.html\?q=/.test(b), "박정호 href: " + b);
+    expect(/^member\/.+\/$/.test(decodeURIComponent(b)), "박정호 href: " + b);
     await page.close();
     return a.href.slice(0, 40) + "…";
   });
@@ -199,6 +199,55 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     const shown = await visibleCount(page, "#memberRows > *");
     expect(seedHidden, "글 52건이 있는데 가져오기 안내가 보임");
     expect(shown === 1, `검색 결과 ${shown}행`);
+    await page.close();
+  });
+
+
+  // ── 정적 글·멤버 페이지 (prerender) ─────────────────
+  await test("정적 글 페이지 blog/<id>/: JS 실행 후에도 같은 글, 오류 없음, 뒤로가기·CTA 링크가 루트 기준", async () => {
+    const page = await open("blog/weekly-meeting-20260513/");
+    await page.waitForFunction(() => document.querySelector(".post-title")?.textContent.includes("5월 13일"), { timeout: 10000 });
+    const links = await page.$$eval(".post-back, .post-cta-button", (els) => els.map((a) => a.href));
+    expect(links.every((h) => /\/(blog|visitor)\.html$/.test(h)), "링크: " + links.join(" "));
+    const canon = await page.$eval('link[rel="canonical"]', (l) => l.href);
+    expect(/\/blog\/weekly-meeting-20260513\/$/.test(canon), "canonical " + canon);
+    const errs = errors["blog/weekly-meeting-20260513/"];
+    expect(errs.length === 0, errs.join(" | "));
+    await page.close();
+  });
+  await test("post.html?id= 로 연 정적 글은 canonical 이 blog/<id>/ 를 가리킨다", async () => {
+    const page = await open("post.html?id=weekly-meeting-20260513");
+    await page.waitForSelector(".post-title", { timeout: 10000 });
+    const canon = await page.$eval('link[rel="canonical"]', (l) => l.href);
+    expect(/\/blog\/weekly-meeting-20260513\/$/.test(canon), "canonical " + canon);
+    await page.close();
+  });
+  await test("멤버 페이지 member/박웅희/: 제목·소개·명함 이미지 로드, 메뉴 동작, 오류 없음", async () => {
+    const page = await open("member/%EB%B0%95%EC%9B%85%ED%9D%AC/");
+    const h1 = await page.$eval(".post-title", (el) => el.textContent);
+    expect(/박웅희/.test(h1), "h1 " + h1);
+    const imgs = await page.$$eval("article img", (els) => els.map((i) => ({ src: i.getAttribute("src"), ok: i.complete && i.naturalWidth > 0 })));
+    expect(imgs.length >= 2 && imgs.every((i) => i.ok), "이미지 로드 실패: " + JSON.stringify(imgs.filter((i) => !i.ok)));
+    const nav = await page.$eval('.main-nav a[href="experts.html"]', (a) => a.href);
+    expect(/\/experts\.html$/.test(nav), "메뉴 링크 " + nav);
+    const errs = errors["member/%EB%B0%95%EC%9B%85%ED%9D%AC/"];
+    expect(errs.length === 0, errs.join(" | "));
+    await page.close();
+    return `이미지 ${imgs.length}개`;
+  });
+  await test("멤버 페이지 390px: 가로 스크롤 없음", async () => {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 390, height: 844, isMobile: true });
+    await page.goto(BASE + "member/%EB%B0%95%EC%9B%85%ED%9D%AC/", { waitUntil: "networkidle0", timeout: 60000 });
+    const w = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, inner: window.innerWidth }));
+    expect(w.scroll <= w.inner + 1, `scrollWidth ${w.scroll} > ${w.inner}`);
+    await page.close();
+    return `${w.scroll}/${w.inner}`;
+  });
+  await test("전문가 찾기: 멤버 이름이 member/<이름>/ 프로필로 링크된다", async () => {
+    const page = await open("experts.html");
+    const href = await page.$eval('.expert-card h2 a', (a) => a.getAttribute("href"));
+    expect(/^member\/.+\/$/.test(decodeURIComponent(href)), "href " + href);
     await page.close();
   });
 

@@ -1,0 +1,14 @@
+{
+  "name": "bni-choegang-web",
+  "private": true,
+  "description": "BNI 고양지역 최강챕터 홈페이지 (정적 사이트)",
+  "scripts": {
+    "build": "node tools/build/prerender.js",
+    "serve": "python -m http.server 8080 --bind 127.0.0.1",
+    "test": "node tools/e2e/site.test.js http://127.0.0.1:8080/ && node tools/e2e/ld.test.js",
+    "test:public": "node tools/e2e/site.test.js https://musicman0519-a11y.github.io/bni-choegang-web/ && node tools/e2e/ld.test.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}
