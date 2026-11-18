@@ -120,7 +120,6 @@ class Cleaner(HTMLParser):
 
 def md_to_html(text):
     text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", text)                    # 이미지 제거
-    text = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", lambda m: "" if BAD_LINK.search(m.group(2)) else f'<a href="{html.escape(m.group(2))}" target="_blank" rel="noopener">{html.escape(m.group(1))}</a>', text)
     blocks = []
     for block in re.split(r"\n\s*\n", text):
         lines = [l.rstrip() for l in block.strip().split("\n") if l.strip()]
@@ -139,6 +138,9 @@ def md_to_html(text):
 def inline(s):
     # Markdown 글은 HTML 이 아니므로 항상 이스케이프한다 ("< 주간회의 시작 >" 같은 글자가 태그로 오인되지 않게)
     s = html.escape(s, quote=False)
+    # Markdown 링크 [글](주소) 는 이스케이프 뒤에 변환한다 (주소의 & 는 &amp; 로 이미 바뀌어 href 에 그대로 써도 됨)
+    s = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)",
+               lambda m: m.group(1) if BAD_LINK.search(m.group(2)) else f'<a href="{m.group(2)}" target="_blank" rel="noopener">{m.group(1)}</a>', s)
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     return s.replace("**", "")  # 짝이 안 맞는 굵게 기호는 지운다
 
