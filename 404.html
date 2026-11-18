@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>페이지를 찾는 중 | BNI 고양지역 최강챕터</title>
+    <link rel="icon" type="image/svg+xml" href="/bni-choegang-web/assets/images/favicon-cg.svg" />
+    <style>
+      body { margin: 0; font-family: "Pretendard", "Malgun Gothic", sans-serif; background: #f6f6f9; color: #1b1f27; display: grid; place-items: center; min-height: 100vh; }
+      main { text-align: center; padding: 32px 16px; }
+      a { color: #c8102e; font-weight: 700; }
+    </style>
+    <script>
+      // 옛 홈페이지(bnichoegang.com) 주소를 새 페이지로 보냅니다. GitHub Pages 는 서버 리다이렉트가 없어 404 페이지에서 처리합니다.
+      (() => {
+        const path = location.pathname.replace(/^\/bni-choegang-web/, "");          // Pages 하위 경로와 도메인 루트 모두 지원
+        const base = location.pathname.startsWith("/bni-choegang-web/") ? "/bni-choegang-web/" : "/";
+        const search = location.search;
+        let target = "";
+        const blog = path.match(/^\/blog\/([a-z0-9-]+)\/?$/i);
+        if (blog) target = `post.html?id=${encodeURIComponent(blog[1])}`;
+        else if (/^\/blog\.html$/.test(path) && /[?&]slug=/.test(search)) target = `post.html?id=${encodeURIComponent(new URLSearchParams(search).get("slug"))}`;
+        else if (/^\/(blogs?\.html|blog|topic(\/.*)?)\/?$/.test(path)) target = "blog.html";
+        else if (/^\/(members|category|member)(\.html)?\/?$/.test(path)) target = "experts.html" + (new URLSearchParams(search).get("q") ? `?q=${encodeURIComponent(new URLSearchParams(search).get("q"))}` : "");
+        else if (/^\/collaborate(\.html)?\/?$/.test(path)) target = "contact.html";
+        else if (/^\/visitor(\.html)?\/?$/.test(path)) target = "visitor.html";
+        else if (/^\/(about|areas)(\.html)?\/?$/.test(path)) target = "about.html";
+        else if (/^\/admin(\/.*)?$/.test(path)) target = "admin.html";
+        if (target) location.replace(base + target);
+      })();
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>페이지를 찾을 수 없습니다</h1>
+      <p>주소가 바뀌었거나 삭제된 페이지입니다.</p>
+      <p><a href="/bni-choegang-web/">홈으로 가기</a> · <a href="/bni-choegang-web/blog.html">최강챕터 뉴스</a> · <a href="/bni-choegang-web/experts.html">전문가 찾기</a></p>
+    </main>
+  </body>
+</html>

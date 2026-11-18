@@ -422,11 +422,15 @@
   const htmlToText = (html) => {
     const box = document.createElement("div");
     box.innerHTML = html || "";
+    const toPlain = (html) => {
+      const text = html.replace(/<strong>(.*?)<\/strong>/g, "**$1**").replace(/<br\s*\/?>/g, "\n").replace(/<[^>]+>/g, "").trim();
+      return new DOMParser().parseFromString(text, "text/html").documentElement.textContent;
+    };
     return [...box.children].map((el) => {
-      const text = el.innerHTML.replace(/<strong>(.*?)<\/strong>/g, "**$1**").replace(/<[^>]+>/g, "").trim();
-      const plain = new DOMParser().parseFromString(text, "text/html").documentElement.textContent;
-      return el.tagName === "H2" ? `## ${plain}` : plain;
-    }).join("\n\n");
+      if (el.tagName === "UL" || el.tagName === "OL") return [...el.children].map((li) => `- ${toPlain(li.innerHTML)}`).join("\n");
+      const plain = toPlain(el.innerHTML);
+      return el.tagName === "H2" || el.tagName === "H3" ? `## ${plain}` : plain;
+    }).filter(Boolean).join("\n\n");
   };
   $("#seedPostsButton").addEventListener("click", async () => {
     const rows = (window.staticPosts || []).map((p, index) => ({
