@@ -26,10 +26,10 @@ http://127.0.0.1:8080/ 에서 확인. 화면 확인은 Chrome 헤드리스 `--sc
 
 ## 배포
 - GitHub Pages, `main` 브랜치 root 에서 배포. 푸시하면 1~2분 뒤 반영.
-- 공개 URL: https://musicman0519-a11y.github.io/bni-choegang-web/
+- 공개 URL: **https://choegang.co.kr/** (가비아 DNS → GitHub Pages, `CNAME` 파일). 옛 주소 https://musicman0519-a11y.github.io/bni-choegang-web/ 은 새 도메인으로 301.
 - 저장소 전체가 그대로 서빙되므로 비밀값·개인 파일을 저장소에 두지 않는다. 백업 zip 은 `E:\projects\_backup\` 에 둔다(`*.zip` 은 .gitignore).
 - 정적 파일 캐시는 `?v=숫자` 수동 버스팅. CSS/JS 를 고치면 HTML 의 `?v=` 숫자를 올린다.
 
 ## 규칙
-- 전부 상대경로 사용(하위 경로 `/bni-choegang-web/` 에서 동작해야 함). `href="/..."` 금지.
+- 전부 상대경로 사용(도메인 루트와 github.io 하위 경로 양쪽에서 동작해야 함). `href="/..."` 금지(404.html 만 예외).
 - 로고 원본은 `assets/images/main-logo.png`(워드마크)와 `logo-cg.svg`(헤더용 CG 뱃지). JPG 변환본은 `bni-choegang-logo*.jpg`.

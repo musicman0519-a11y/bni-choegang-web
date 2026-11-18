@@ -1,4 +1,4 @@
-# BNI 고양지역 최강챕터 — https://musicman0519-a11y.github.io/bni-choegang-web
+# BNI 고양지역 최강챕터 — https://choegang.co.kr
 User-agent: *
 Allow: /
 Disallow: /admin.html
@@ -22,5 +22,5 @@ Disallow: /admin.html
 User-agent: Google-Extended
 Allow: /
 
-# AI 요약용 사이트 설명: https://musicman0519-a11y.github.io/bni-choegang-web/llms.txt
-Sitemap: https://musicman0519-a11y.github.io/bni-choegang-web/sitemap.xml
+# AI 요약용 사이트 설명: https://choegang.co.kr/llms.txt
+Sitemap: https://choegang.co.kr/sitemap.xml
