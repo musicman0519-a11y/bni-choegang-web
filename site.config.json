@@ -111,5 +111,9 @@
       "sitemap": false,
       "meta": "robots-only"
     }
-  ]
+  ],
+  "verification": {
+    "naver": "250fa6d332b57fee67a7a70a45f04b57f8460717",
+    "google": ""
+  }
 }

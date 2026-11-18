@@ -106,7 +106,10 @@ const breakfastEvent = () => {
 const META_RE = /\s*<!-- meta:start -->[\s\S]*?<!-- meta:end -->/;
 const LD_RE = /\s*<!-- ld:start -->[\s\S]*?<!-- ld:end -->/;
 function metaBlock({ title, description, canonical, image, robots = "index, follow, max-image-preview:large, max-snippet:-1", type = "website", imageAlt }) {
+  const v = config.verification || {};
   const lines = [
+    v.naver ? `<meta name="naver-site-verification" content="${esc(v.naver)}" />` : "",
+    v.google ? `<meta name="google-site-verification" content="${esc(v.google)}" />` : "",
     `<meta name="robots" content="${robots}" />`,
     canonical ? `<link rel="canonical" href="${esc(canonical)}" />` : "",
     `<meta property="og:type" content="${type}" />`, `<meta property="og:site_name" content="${esc(config.shortName)}" />`, `<meta property="og:locale" content="${config.locale}" />`,
