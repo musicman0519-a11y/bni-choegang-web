@@ -139,7 +139,7 @@ def md_to_html(text):
 def inline(s):
     s = html.escape(s, quote=False) if "<" not in s else s
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
-    return s
+    return s.replace("**", "")  # 짝이 안 맞는 굵게 기호는 지운다
 
 
 def pre_clean(raw):
@@ -157,7 +157,7 @@ def clean_html(raw):
         return md_to_html(raw), ""
     c = Cleaner(); c.feed(raw); c.close()
     out = "".join(c.out)
-    out = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", out)
+    out = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", out).replace("**", "")
     # 블록 경계(\n\n)로 나눠 p 로 감싸기, 이미 블록 태그면 그대로
     blocks = []
     for chunk in re.split(r"\n\s*\n", out):
