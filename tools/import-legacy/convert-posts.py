@@ -137,7 +137,8 @@ def md_to_html(text):
 
 
 def inline(s):
-    s = html.escape(s, quote=False) if "<" not in s else s
+    # Markdown 글은 HTML 이 아니므로 항상 이스케이프한다 ("< 주간회의 시작 >" 같은 글자가 태그로 오인되지 않게)
+    s = html.escape(s, quote=False)
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     return s.replace("**", "")  # 짝이 안 맞는 굵게 기호는 지운다
 

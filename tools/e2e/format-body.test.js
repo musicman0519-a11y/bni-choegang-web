@@ -44,14 +44,17 @@ test("왕복: 텍스트 → HTML → 텍스트 가 같다", () => {
 const sb = { window: {}, document: { querySelector: () => null, querySelectorAll: () => [] }, console }; sb.window.window = sb.window; vm.createContext(sb);
 for (const f of ["experts.js", "blog-data.js", "blog-legacy.js"]) vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sb);
 const posts = sb.window.staticPosts.filter((p) => p.body);
-test(`정적 글 ${posts.length}건 왕복: 소제목·목록·굵게 개수 보존, 본문 글자 손실 없음`, () => {
+const decode = (h) => h.replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
+const plainChars = (html) => decode(html.replace(/<[^>]+>/g, "")).replace(/\s+/g, "");
+const boldChars = (html) => (html.match(/<strong[^>]*>[\s\S]*?<\/strong>/g) || []).map(plainChars).join("").length;
+test(`정적 글 ${posts.length}건 왕복: 소제목·목록 개수, 굵게 글자 수, 본문 글자가 모두 보존된다`, () => {
   const bad = [];
   for (const p of posts) {
     const back = formatBody(htmlToText(p.body));
-    const diff = ["h2", "h3", "li", "strong"].filter((t) => count(p.body, t) !== count(back, t));
-    const textA = p.body.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, "").length;
-    const textB = back.replace(/<[^>]+>/g, "").replace(/\s+/g, "").length;
-    if (diff.length || Math.abs(textA - textB) > textA * 0.02) bad.push(`${p.id}(${diff.join(",") || "글자 " + textA + "→" + textB})`);
+    const diff = ["h2", "h3", "li"].filter((t) => count(p.body, t) !== count(back, t));
+    if (boldChars(p.body) !== boldChars(back)) diff.push(`굵게 ${boldChars(p.body)}→${boldChars(back)}`);
+    if (plainChars(p.body) !== plainChars(back)) diff.push(`본문 ${plainChars(p.body).length}→${plainChars(back).length}`);
+    if (diff.length) bad.push(`${p.id}(${diff.join(",")})`);
   }
   expect(bad.length === 0, bad.slice(0, 5).join(" | "));
   return `${posts.length}건 통과`;
