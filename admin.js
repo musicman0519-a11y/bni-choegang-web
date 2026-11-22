@@ -71,6 +71,54 @@
     refreshNewCount();
   }
 
+  // ── 2단계 인증(TOTP) 게이트 ─────────────────────────────
+  // 로그인(aal1) 뒤 관리자 화면에 들어가기 전에 인증 앱 코드를 요구한다. 등록된 앱이 없으면 먼저 등록시킨다.
+  let mfaFactorId = "";
+  async function gateMfa(session) {
+    if (window.__adminDemo || !sb.auth.mfa) return showAdmin(session);
+    const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.currentLevel === "aal2") return showAdmin(session);
+    const { data: factors } = await sb.auth.mfa.listFactors();
+    const all = factors?.totp || [];
+    const verified = all.filter((f) => f.status === "verified");
+    $("#loginScreen").hidden = true;
+    $("#adminApp").hidden = true;
+    $("#mfaScreen").hidden = false;
+    $("#mfaMessage").textContent = "";
+    $("#mfaCode").value = "";
+    if (verified.length) {
+      mfaFactorId = verified[0].id;
+      $("#mfaTitle").textContent = "2단계 인증";
+      $("#mfaEnroll").hidden = true;
+      $("#mfaVerifyHelp").hidden = false;
+    } else {
+      // 이전에 등록하다 만 항목이 있으면 지우고 새로 만든다
+      for (const f of all.filter((f) => f.status !== "verified")) await sb.auth.mfa.unenroll({ factorId: f.id });
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "최강챕터 관리자" });
+      if (error) { $("#mfaMessage").textContent = "인증 앱 등록을 시작하지 못했어요: " + error.message; return; }
+      mfaFactorId = data.id;
+      $("#mfaTitle").textContent = "인증 앱 등록";
+      $("#mfaQr").src = data.totp.qr_code;
+      $("#mfaSecret").textContent = data.totp.secret;
+      $("#mfaEnroll").hidden = false;
+      $("#mfaVerifyHelp").hidden = true;
+    }
+    $("#mfaCode").focus();
+  }
+  $("#mfaForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const code = $("#mfaCode").value.trim();
+    if (!/^[0-9]{6}$/.test(code)) { $("#mfaMessage").textContent = "6자리 숫자를 입력해 주세요."; return; }
+    $("#mfaSubmit").disabled = true;
+    const { error } = await sb.auth.mfa.challengeAndVerify({ factorId: mfaFactorId, code });
+    $("#mfaSubmit").disabled = false;
+    if (error) { $("#mfaMessage").textContent = "코드가 맞지 않아요. 앱의 최신 숫자를 다시 입력해 주세요."; $("#mfaCode").value = ""; $("#mfaCode").focus(); return; }
+    const { data: { session } } = await sb.auth.getSession();
+    $("#mfaScreen").hidden = true;
+    showAdmin(session);
+  });
+  $("#mfaLogout").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
+
   let signupMode = false;
   $("#signupToggle").addEventListener("click", () => {
     signupMode = !signupMode;
@@ -95,7 +143,7 @@
         return;
       }
       form.reset();
-      if (data.session) { showAdmin(data.session); return; }
+      if (data.session) { gateMfa(data.session); return; }
       $("#signupToggle").click();
       $("#loginMessage").textContent = "계정을 만들었어요. 이메일로 온 확인 링크를 누른 뒤 로그인해 주세요.";
       return;
@@ -118,7 +166,7 @@
     sessionStorage.removeItem(LOCK_KEY);
     sessionStorage.setItem("cg_admin_login_at", String(Date.now()));
     form.reset();
-    showAdmin(data.session);
+    gateMfa(data.session);
   });
   $("#logoutButton").addEventListener("click", async () => {
     await sb.auth.signOut();
@@ -584,6 +632,6 @@
 
   // ── 시작 ───────────────────────────────────────────────
   const { data: { session } } = await sb.auth.getSession();
-  if (session) showAdmin(session);
+  if (session) gateMfa(session);
   else $("#loginScreen").hidden = false;
 })();

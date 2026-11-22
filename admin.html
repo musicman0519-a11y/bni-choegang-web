@@ -10,10 +10,10 @@
     <meta http-equiv="Content-Security-Policy" content="default-src &#39;self&#39;; script-src &#39;self&#39; https://cdn.jsdelivr.net; connect-src &#39;self&#39; https://*.supabase.co; img-src &#39;self&#39; data: blob: https:; style-src &#39;self&#39; &#39;unsafe-inline&#39;; font-src &#39;self&#39; data:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; media-src &#39;self&#39; https:; object-src &#39;none&#39;; base-uri &#39;self&#39;; form-action &#39;self&#39;" />
     <meta name="robots" content="noindex, nofollow" />
     <!-- meta:end -->
-    <link rel="stylesheet" href="admin.css?v=4" />
+    <link rel="stylesheet" href="admin.css?v=5" />
     <script src="supabase-config.js?v=2"></script>
     <script src="admin-demo.js?v=2"></script>
-    <script src="site-data.js?v=2" defer data-scripts="journey.js?v=1 experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=8"></script>
+    <script src="site-data.js?v=2" defer data-scripts="journey.js?v=1 experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=9"></script>
   </head>
   <body>
     <!-- 로그인 -->
@@ -27,6 +27,25 @@
         <button class="btn btn-primary" type="submit" id="loginSubmit">로그인</button>
         <button class="btn btn-ghost" type="button" id="signupToggle">처음이신가요? 계정 만들기</button>
         <p class="form-message" id="loginMessage" role="alert"></p>
+      </form>
+    </main>
+
+    <!-- 2단계 인증 (TOTP) -->
+    <main class="login-screen" id="mfaScreen" hidden>
+      <form class="login-card" id="mfaForm">
+        <img src="assets/images/logo-cg.svg" alt="BNI 최강챕터" />
+        <h1 id="mfaTitle">2단계 인증</h1>
+        <div id="mfaEnroll" hidden>
+          <p class="mfa-help">관리자 계정 보호를 위해 인증 앱을 등록합니다. 휴대폰에 <b>Google Authenticator</b>(또는 Microsoft Authenticator, Authy)를 설치하고 아래 QR 코드를 스캔하세요.</p>
+          <img class="mfa-qr" id="mfaQr" alt="인증 앱 등록 QR 코드" />
+          <p class="mfa-help">QR 을 못 읽으면 앱에 이 키를 직접 입력: <code id="mfaSecret"></code></p>
+        </div>
+        <p class="mfa-help" id="mfaVerifyHelp" hidden>인증 앱에 표시된 6자리 숫자를 입력하세요.</p>
+        <label>인증 코드 (6자리)<input name="code" id="mfaCode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="123456" required /></label>
+        <button class="btn btn-primary" type="submit" id="mfaSubmit">확인</button>
+        <button class="btn btn-ghost" type="button" id="mfaLogout">다른 계정으로 로그인</button>
+        <p class="form-message" id="mfaMessage" role="alert"></p>
+        <p class="mfa-help mfa-lost">인증 앱을 잃어버렸다면 다른 관리자에게 Supabase 대시보드(Authentication → Users → 해당 계정 → MFA factors 삭제)에서 초기화를 요청하세요.</p>
       </form>
     </main>
 
