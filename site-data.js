@@ -4,14 +4,17 @@
 // 연결 정보가 없거나 불러오기에 실패하면 각 스크립트에 들어 있는 기본 데이터로 동작합니다.
 (() => {
   const SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.min.js";
+  // SRI: 위 파일의 sha384. 버전을 올리면 `node tools/build/sri.js` 로 다시 계산해 바꾼다
+  const SDK_INTEGRITY = "sha384-7i/4BYWz4Mn+lJfg2HWfEPfZQ7tmFKF3CTSKlXBpxWjNlLjcg+T6smpHG4gLmU1u";
   const me = document.currentScript;
   const pageScripts = (me?.dataset.scripts || "").split(/\s+/).filter(Boolean);
   const configured = Boolean(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
   window.siteConfigured = configured;
 
-  const loadScript = (src) => new Promise((resolve, reject) => {
+  const loadScript = (src, integrity) => new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = src;
+    if (integrity) { script.integrity = integrity; script.crossOrigin = "anonymous"; }
     script.onload = resolve;
     script.onerror = () => reject(new Error(`스크립트를 불러오지 못했습니다: ${src}`));
     document.head.append(script);
@@ -21,7 +24,7 @@
   window.getSupabase = async () => {
     if (!configured) return null;
     if (client) return client;
-    if (!window.supabase?.createClient) await loadScript(SDK_URL);
+    if (!window.supabase?.createClient) await loadScript(SDK_URL, SDK_INTEGRITY);
     client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
     return client;
   };

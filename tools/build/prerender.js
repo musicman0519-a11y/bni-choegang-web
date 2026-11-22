@@ -108,6 +108,7 @@ const LD_RE = /\s*<!-- ld:start -->[\s\S]*?<!-- ld:end -->/;
 function metaBlock({ title, description, canonical, image, robots = "index, follow, max-image-preview:large, max-snippet:-1", type = "website", imageAlt }) {
   const v = config.verification || {};
   const lines = [
+    config.csp ? `<meta http-equiv="Content-Security-Policy" content="${esc(config.csp)}" />` : "",
     v.naver ? `<meta name="naver-site-verification" content="${esc(v.naver)}" />` : "",
     v.google ? `<meta name="google-site-verification" content="${esc(v.google)}" />` : "",
     `<meta name="robots" content="${robots}" />`,
@@ -138,6 +139,8 @@ const addUrl = (p, { lastmod = today, changefreq = "monthly", priority = "0.5" }
 for (const page of config.pages) {
   const html = read(page.file);
   if (page.meta === "robots-only") {
+    const cspLine = config.csp ? `
+    <meta http-equiv="Content-Security-Policy" content="${esc(config.csp)}" />` : "";
     const out = html.replace(META_RE, "").replace(/(<title>[^<]*<\/title>)/, `$1\n    <!-- meta:start -->\n    <meta name="robots" content="${page.robots}" />\n    <!-- meta:end -->`);
     write(page.file, out); continue;
   }
@@ -214,7 +217,7 @@ function staticShell(template, { base, postId, bodyHtml, articleAttrs }) {
   let out = template.replace(/<meta charset="utf-8" \/>/, `<meta charset="utf-8" />\n    <base href="${base}" />`);
   // <base> 때문에 페이지 내 앵커가 루트로 가지 않도록
   out = out.replace(/href="#main"/g, `href="${postId ? postPath({ id: postId }) : ""}#main"`);
-  if (postId) out = out.replace(/<script src="supabase-config\.js/, `<script>window.postId = ${JSON.stringify(postId)};</script>\n    <script src="supabase-config.js`);
+  if (postId) out = out.replace(/<html lang="ko">/, `<html lang="ko" data-post-id="${esc(postId)}">`); // CSP: 인라인 스크립트 대신 data 속성
   out = out.replace(/<article class="post-article" id="blogPost"><\/article>/, `<article class="post-article"${articleAttrs || ' id="blogPost"'}>${bodyHtml}\n          </article>`);
   return out;
 }
@@ -290,7 +293,7 @@ for (const m of members) {
   ])];
   const meta = metaBlock({ title, description, canonical, image: url(memberPhoto(m)), type: "profile", imageAlt: `${m.name} ${role}` });
   let html = injectHead(postTemplate, { title, description, meta, ld });
-  html = html.replace(/<script src="site-data\.js[^>]*data-scripts="[^"]*"><\/script>/, (s) => s.replace(/data-scripts="[^"]*"/, 'data-scripts="journey.js?v=1 experts.js?v=10 app.js?v=15 namecard.js?v=5 menu.js?v=1"'));
+  html = html.replace(/<script src="site-data\.js[^>]*data-scripts="[^"]*"><\/script>/, (s) => s.replace(/data-scripts="[^"]*"/, 'data-scripts="journey.js?v=1 experts.js?v=10 app.js?v=16 namecard.js?v=5 menu.js?v=1"'));
   html = html.replace(/<a class="active" href="blog\.html" aria-current="page">최강챕터 뉴스<\/a>/, '<a href="blog.html">최강챕터 뉴스</a>').replace(/<a href="experts\.html">전문가 찾기<\/a>/, '<a class="active" href="experts.html" aria-current="page">전문가 찾기</a>');
   html = staticShell(html, { base: "../../", postId: "", bodyHtml: memberArticle(m), articleAttrs: ' id="memberPage"' });
   html = html.replace(/href="#main"/g, `href="${pagePath}#main"`);

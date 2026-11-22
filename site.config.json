@@ -115,5 +115,6 @@
   "verification": {
     "naver": "250fa6d332b57fee67a7a70a45f04b57f8460717",
     "google": ""
-  }
+  },
+  "csp": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'"
 }

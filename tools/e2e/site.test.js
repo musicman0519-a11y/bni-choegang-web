@@ -145,11 +145,13 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
   });
 
   // ── 관리자 ──────────────────────────────────────────
-  await test("관리자(연결 전): 설정 안내 화면이 뜬다", async () => {
+  await test("관리자: 연결 전엔 설정 안내, 연결 후엔 로그인 화면이 뜬다", async () => {
     const page = await open("admin.html");
+    const configured = await page.evaluate(() => Boolean(window.siteConfigured));
     const setup = await visible(page, "#setupScreen");
+    const login = await visible(page, "#loginScreen");
     const app = await visible(page, "#adminApp");
-    expect(setup && !app, `setup=${setup} app=${app}`);
+    expect(configured ? login && !setup && !app : setup && !app, `configured=${configured} setup=${setup} login=${login} app=${app}`);
     expect(errors["admin.html"].length === 0, errors["admin.html"].join(" | "));
     await page.close();
   });
@@ -295,9 +297,10 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     const configured = await probe.evaluate(() => Boolean(window.siteConfigured));
     await probe.close();
     if (configured) {
-      await test("실 DB: 홈이 Supabase 멤버 데이터로 렌더된다(siteMembers 29명 이상)", async () => {
+      await test("실 DB: 홈이 Supabase 멤버 데이터로 렌더된다(siteMembers 29명 이상, 가져오기 전이면 건너뜀)", async () => {
         const page = await open("index.html");
         const n = await page.evaluate(() => (window.siteMembers || []).length);
+        if (n === 0) { await page.close(); results.push(["SKIP", "실 DB: members 표가 비어 있음(관리자 '기존 멤버 가져오기' 전)", ""]); return "표 비어 있음"; }
         expect(n >= 29, `siteMembers ${n}`);
         await page.close();
         return `${n}명`;

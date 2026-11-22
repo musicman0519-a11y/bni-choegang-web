@@ -108,8 +108,22 @@
       status.textContent = text;
       status.classList.toggle("is-success", ok);
     };
+    const loadedAt = Date.now();
+    let lastSubmitAt = 0;
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      // 스팸 방지: 숨은 필드가 채워졌거나, 페이지 로드 3초 안에 제출했거나, 60초 안에 다시 제출하면 조용히 무시한다
+      const honeypot = (form.elements.website?.value || "").trim();
+      const sinceLoad = Date.now() - loadedAt;
+      const sinceLast = Date.now() - lastSubmitAt;
+      if (honeypot || sinceLoad < 3000) {
+        show("접수되었습니다. 담당자가 확인 후 연락드리겠습니다.", true); // 봇에게는 성공처럼 보이게
+        return;
+      }
+      if (lastSubmitAt && sinceLast < 60000) {
+        show("방금 접수된 신청이 있습니다. 잠시 후 다시 시도해 주세요.", false);
+        return;
+      }
       const sb = await window.getSupabase?.();
       if (!sb) {
         show("접수 시스템이 아직 연결되지 않아 내용은 전송되지 않았습니다. 접수 기능이 준비되면 다시 안내하겠습니다.", false);
@@ -127,6 +141,7 @@
         show("전송 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.", false);
         return;
       }
+      lastSubmitAt = Date.now();
       form.reset();
       show("접수되었습니다. 담당자가 확인 후 연락드리겠습니다.", true);
     });

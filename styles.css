@@ -840,3 +840,6 @@ body.drawer-open { overflow: hidden; }
 .map-link { margin-left: 6px; color: inherit; font-size: .85em; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; opacity: .9; }
 .schedule-banner-item { max-width: 460px; }
 .map-link { white-space: nowrap; }
+
+/* 스팸 방지 허니팟 — 사람에게는 보이지 않고 봇만 채운다 */
+.hp-field { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }

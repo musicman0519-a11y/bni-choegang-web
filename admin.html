@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="admin.css?v=4" />
     <script src="supabase-config.js?v=2"></script>
     <script src="admin-demo.js?v=2"></script>
-    <script src="site-data.js?v=2" defer data-scripts="journey.js?v=1 experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=7"></script>
+    <script src="site-data.js?v=2" defer data-scripts="journey.js?v=1 experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=8"></script>
   </head>
   <body>
     <!-- 로그인 -->
@@ -20,7 +20,7 @@
       <form class="login-card" id="loginForm">
         <img src="assets/images/logo-cg.svg" alt="BNI 최강챕터" />
         <h1>관리자 로그인</h1>
-        <label>이메일<input name="email" type="email" autocomplete="username" required /></label>
+        <label>이메일<input name="email" type="email" autocomplete="off" required /></label>
         <label>비밀번호<input name="password" type="password" autocomplete="current-password" required /></label>
         <label id="passwordConfirmField" hidden>비밀번호 확인<input name="password2" type="password" autocomplete="new-password" minlength="8" /></label>
         <button class="btn btn-primary" type="submit" id="loginSubmit">로그인</button>

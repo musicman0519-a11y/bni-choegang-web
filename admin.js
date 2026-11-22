@@ -60,6 +60,13 @@
     $("#adminEmail").textContent = session.user.email;
     myEmail = session.user.email.toLowerCase();
     $("#demoBar").hidden = !window.__adminDemo;
+    // 세션 12시간 지나면 자동 로그아웃 (탭을 열어 둔 채 자리를 비우는 경우 대비)
+    if (!window.__adminDemo) {
+      const loginAt = Number(sessionStorage.getItem("cg_admin_login_at") || Date.now());
+      if (!sessionStorage.getItem("cg_admin_login_at")) sessionStorage.setItem("cg_admin_login_at", String(loginAt));
+      const expireMs = loginAt + 12 * 3600 * 1000 - Date.now();
+      setTimeout(async () => { await sb.auth.signOut(); sessionStorage.removeItem("cg_admin_login_at"); location.reload(); }, Math.max(1000, expireMs));
+    }
     openTab("inquiries");
     refreshNewCount();
   }
@@ -80,7 +87,7 @@
     const password = form.elements.password.value;
     $("#loginMessage").textContent = "";
     if (signupMode) {
-      if (password.length < 8) { $("#loginMessage").textContent = "비밀번호는 8자 이상으로 정해 주세요."; return; }
+      if (password.length < 10) { $("#loginMessage").textContent = "비밀번호는 10자 이상으로 정해 주세요."; return; }
       if (password !== form.elements.password2.value) { $("#loginMessage").textContent = "비밀번호 확인이 일치하지 않아요."; return; }
       const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.href.split("?")[0] } });
       if (error) {
@@ -93,11 +100,23 @@
       $("#loginMessage").textContent = "계정을 만들었어요. 이메일로 온 확인 링크를 누른 뒤 로그인해 주세요.";
       return;
     }
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-      $("#loginMessage").textContent = "이메일 또는 비밀번호가 맞지 않아요.";
+    // 로그인 실패 5회 → 60초 잠금 (브라우저 단위. 서버 쪽 제한은 Supabase Rate Limits 가 맡음)
+    const LOCK_KEY = "cg_admin_lock";
+    const lock = JSON.parse(sessionStorage.getItem(LOCK_KEY) || '{"fails":0,"until":0}');
+    if (lock.until > Date.now()) {
+      $("#loginMessage").textContent = `로그인 시도가 너무 많아요. ${Math.ceil((lock.until - Date.now()) / 1000)}초 뒤에 다시 시도해 주세요.`;
       return;
     }
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      lock.fails += 1;
+      if (lock.fails >= 5) { lock.until = Date.now() + 60000; lock.fails = 0; }
+      sessionStorage.setItem(LOCK_KEY, JSON.stringify(lock));
+      $("#loginMessage").textContent = lock.until > Date.now() ? "5회 실패해서 60초 동안 잠겼어요." : "이메일 또는 비밀번호가 맞지 않아요.";
+      return;
+    }
+    sessionStorage.removeItem(LOCK_KEY);
+    sessionStorage.setItem("cg_admin_login_at", String(Date.now()));
     form.reset();
     showAdmin(data.session);
   });

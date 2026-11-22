@@ -77,7 +77,7 @@ for (const d of sample(postDirs, 5)) test(`blog/${d}/: JS 없이 본문 300자 �
   const n = nodes(html); const bp = n.find((x) => x["@type"] === "BlogPosting");
   expect(bp && bp.headline && bp.datePublished && bp.publisher, "BlogPosting 필드");
   expect(attr(html, /<link rel="canonical" href="([^"]+)"/) === `${ORIGIN}/blog/${encodeURIComponent(d)}/`, "canonical");
-  expect(/<base href="\.\.\/\.\.\/" \/>/.test(html) && html.includes(`window.postId = "${d}"`), "base/postId");
+  expect(/<base href="\.\.\/\.\.\/" \/>/.test(html) && html.includes(`data-post-id="${d}"`), "base/postId");
   expect(!/style="|jhigjfiwjrrpatlagnll/.test(html.match(/<div class="post-body">[\s\S]*?<\/div>\s*<div class="post-cta-box">/)[0]), "본문에 style/깨진 이미지");
   return `${body.length}자`;
 });

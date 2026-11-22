@@ -86,9 +86,9 @@
   // 상세 페이지
   const article = document.querySelector("#blogPost");
   if (article) {
-    const id = window.postId || new URLSearchParams(location.search).get("id");
+    const id = document.documentElement.dataset.postId || window.postId || new URLSearchParams(location.search).get("id");
     const post = posts.find((item) => item.id === id);
-    if (post && staticIds.has(post.id) && !window.postId) {
+    if (post && staticIds.has(post.id) && !document.documentElement.dataset.postId && !window.postId) {
       // post.html?id= 로 열린 정적 글: 정본 주소(blog/<id>/)를 canonical 로 알린다
       let link = document.querySelector('link[rel="canonical"]');
       if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.append(link); }
