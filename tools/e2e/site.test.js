@@ -291,6 +291,36 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     return summary.text;
   });
 
+
+  // ── 스팸 방지 (허니팟·제출 간격) — DB 연결과 무관 ──
+  await test("스팸 방지: 숨은 필드를 채우면 '접수' 문구만 보이고 Supabase 로 insert 요청이 나가지 않는다", async () => {
+    const page = await open("visitor.html");
+    const inserts = [];
+    page.on("request", (r) => { if (/\/rest\/v1\/inquiries/.test(r.url()) && r.method() === "POST") inserts.push(r.url()); });
+    await new Promise((r) => setTimeout(r, 3300));
+    await page.evaluate(() => { document.querySelector('#visitorForm [name="website"]').value = "http://spam.example"; });
+    await page.type('#visitorForm [name="name"]', "봇");
+    await page.type('#visitorForm [name="phone"]', "010-9999-9999");
+    await page.click('#visitorForm [type="submit"]');
+    await page.waitForFunction(() => { const s = document.querySelector("#visitorFormStatus"); return s && !s.hidden && s.textContent.trim(); }, { timeout: 10000 });
+    await new Promise((r) => setTimeout(r, 1000));
+    expect(inserts.length === 0, `insert 요청 ${inserts.length}건`);
+    const hidden = await page.$eval('#visitorForm [name="website"]', (el) => { const r = el.getBoundingClientRect(); return r.right <= 0 || getComputedStyle(el.closest("label")).opacity === "0"; });
+    expect(hidden, "허니팟이 화면에 보임");
+    await page.close();
+  });
+  await test("스팸 방지: 페이지 로드 3초 안 제출은 insert 없이 무시된다", async () => {
+    const page = await open("visitor.html");
+    const inserts = [];
+    page.on("request", (r) => { if (/\/rest\/v1\/inquiries/.test(r.url()) && r.method() === "POST") inserts.push(r.url()); });
+    await page.type('#visitorForm [name="name"]', "빠른봇");
+    await page.type('#visitorForm [name="phone"]', "010-9999-9998");
+    await page.click('#visitorForm [type="submit"]');
+    await new Promise((r) => setTimeout(r, 1500));
+    expect(inserts.length === 0, `insert 요청 ${inserts.length}건`);
+    await page.close();
+  });
+
   // ── 실 DB 모드 (supabase-config.js 에 연결 정보가 있을 때만) ──
   {
     const probe = await open("index.html");
@@ -307,6 +337,7 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
       });
       await test("실 DB: 참관 신청 폼 제출 → '접수되었습니다' (테스트 건은 관리자 문의 탭에서 삭제)", async () => {
         const page = await open("visitor.html");
+        await new Promise((r) => setTimeout(r, 3300)); // 스팸 방지 규칙(로드 3초 내 제출 무시)을 넘긴다
         await page.type('#visitorForm [name="name"]', "자동테스트 삭제요망");
         await page.type('#visitorForm [name="phone"]', "010-0000-0000");
         await page.type('#visitorForm [name="message"]', `e2e 자동 테스트 ${new Date().toISOString()} — 관리자 페이지에서 삭제해 주세요`);

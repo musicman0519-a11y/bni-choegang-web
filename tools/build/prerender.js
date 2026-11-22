@@ -141,7 +141,7 @@ for (const page of config.pages) {
   if (page.meta === "robots-only") {
     const cspLine = config.csp ? `
     <meta http-equiv="Content-Security-Policy" content="${esc(config.csp)}" />` : "";
-    const out = html.replace(META_RE, "").replace(/(<title>[^<]*<\/title>)/, `$1\n    <!-- meta:start -->\n    <meta name="robots" content="${page.robots}" />\n    <!-- meta:end -->`);
+    const out = html.replace(META_RE, "").replace(/(<title>[^<]*<\/title>)/, `$1\n    <!-- meta:start -->${cspLine}\n    <meta name="robots" content="${page.robots}" />\n    <!-- meta:end -->`);
     write(page.file, out); continue;
   }
   const canonical = url(page.path);
