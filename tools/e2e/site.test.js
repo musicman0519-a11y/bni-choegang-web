@@ -335,7 +335,9 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
         await page.close();
         return `${n}명`;
       });
-      await test("실 DB: 참관 신청 폼 제출 → '접수되었습니다' (테스트 건은 관리자 문의 탭에서 삭제)", async () => {
+      // 실제 행이 DB 에 남으므로 E2E_REAL_SUBMIT=1 일 때만 실행한다 (매번 관리자가 지워야 하는 부담 방지)
+      if (!process.env.E2E_REAL_SUBMIT) results.push(["SKIP", "실 DB: 참관 신청 제출 — E2E_REAL_SUBMIT=1 로 실행할 때만 (DB 에 테스트 행이 남음)", ""]);
+      else await test("실 DB: 참관 신청 폼 제출 → '접수되었습니다' (테스트 건은 관리자 문의 탭에서 삭제)", async () => {
         const page = await open("visitor.html");
         await new Promise((r) => setTimeout(r, 3300)); // 스팸 방지 규칙(로드 3초 내 제출 무시)을 넘긴다
         await page.type('#visitorForm [name="name"]', "자동테스트 삭제요망");
