@@ -1,6 +1,6 @@
 # BNI 고양지역 최강챕터 홈페이지
 
-정적 사이트(HTML/CSS/JS) + 생성 스크립트(`npm run build`). 데이터는 Supabase 에서 읽고, 연결 전(2026-11-18 현재 미연결, `supabase-config.js` 비어 있음)에는 `experts.js`·`blog-data.js`·`blog-legacy.js` 에 내장된 기본 데이터로 동작한다.
+정적 사이트(HTML/CSS/JS) + 생성 스크립트(`npm run build`). 데이터는 Supabase(프로젝트 bni-choegang, 2026-11-22 연결)에서 읽고, 표가 비어 있거나 연결 실패 시에는 `experts.js`·`blog-data.js`·`blog-legacy.js` 에 내장된 기본 데이터로 동작한다.
 
 ## 구조
 - `index.html` 홈 · `about.html` · `experts.html` 전문가 찾기 · `blog.html`/`post.html` 뉴스 · `visitor.html` 참관 신청 · `contact.html` 협업 문의 · `admin.html` 관리자(메뉴에 링크 없음, 주소 직접 입력)
@@ -15,7 +15,9 @@
 - `body-format.js` 글 본문 서식 공용 모듈: `formatBody`(텍스트→HTML: 빈 줄 문단, `##`/`###` 소제목, `- ` 목록, `**굵게**`)와 `htmlToText`(HTML→텍스트). blog.js·admin.js 가 `window.formatBody/htmlToText` 로 씀. DB 의 `posts.body` 는 이 텍스트 형식으로 저장
 - `blog-legacy.js` 옛 홈페이지 글 44건(자동 생성, 직접 수정 금지). 원본은 `E:\projects\_backup\bni_clean`, 재생성은 `tools/import-legacy/convert-posts.py`
 - `tools/e2e/` 테스트 4종: `journey.test.js`(여정 로직), `format-body.test.js`(본문 왕복, 파일만), `ld.test.js`(메타·JSON-LD·사이트맵·llms, 파일만), `site.test.js <주소>`(puppeteer-core + 설치된 Chrome, 실 DB 케이스는 연결 시에만). `npm test`(로컬 3종) / `npm run test:public`(도메인)
-- `.github/workflows/keepalive.yml` Supabase 무료플랜 정지 방지 핑(주 2회, `supabase-config.js` 에 키가 있을 때만 동작)
+- `.github/workflows/keepalive.yml` Supabase 정지 방지 핑(월·목) / `backup.yml` 공개 표 4개 JSON 백업(월요일, artifact 90일. 문의는 제외)
+- `supabase/migrations/*.sql` 이미 만든 DB 에 추가로 실행한 SQL(보안 제약·MFA 강제·90일 정리). 새 프로젝트는 schema.sql 뒤에 순서대로 실행
+- 관리자 로그인은 비밀번호 + TOTP 2단계(`gateMfa`). `is_admin()` 이 aal2 를 요구하므로 2단계 없이는 쓰기 불가. 데모 모드는 건너뜀
 - `CNAME`(choegang.co.kr)·`google6a71a3acd1bc1ab6.html`(구글 소유확인)은 지우지 않는다. 네이버 인증 태그는 `site.config.json` 의 `verification` 에서 생성기가 넣는다
 
 ## 로컬 실행·확인
@@ -28,8 +30,8 @@ http://127.0.0.1:8080/ 에서 확인. 화면 확인은 Chrome 헤드리스 `--sc
 `blog-data.js`·`blog-legacy.js`·`experts.js`·`site.config.json`·정적 HTML 의 FAQ 를 고치면 **`npm run build`** 를 돌려 정적 페이지·사이트맵·llms.txt 를 다시 만들고 함께 커밋한다. 두 번 돌려도 결과가 같아야 한다(멱등).
 글의 정본 주소는 `blog/<id>/`, 멤버는 `member/<이름>/`. `post.html?id=` 는 DB 에만 있는 글용이며 canonical 로 정본을 가리킨다.
 
-## Supabase (연결 예정)
-`docs/plans/배포-준비.md` 9~23번. 새 조직·프로젝트를 만들어 `supabase/schema.sql`(관리자 이메일 musicman0519@gmail.com) 실행 → Confirm email 끄기, Site URL https://choegang.co.kr/ → `supabase-config.js` 에 URL·anon 키 → 관리자 가입 → 가져오기 버튼(멤버 → 글 → 배너 순, 각 1회). 옛 사이트의 Supabase(lsqhefnqteovhnbmsekg)는 쓰지 않는다.
+## Supabase (연결됨)
+조직 BNI 최강챕터 / 프로젝트 bni-choegang (`dwqdevzlwnpsqaztjhlh`, 싱가포르). `supabase-config.js` 의 키는 publishable(공개) 키. 관리자 musicman0519@gmail.com, 멤버 29·글 52·배너 3 가져오기 완료. Confirm email 꺼짐, TOTP 켜짐, Max rows 300. 옛 사이트 Supabase(lsqhefnqteovhnbmsekg)는 쓰지 않는다. 테스트에서 실제 문의를 넣으려면 `E2E_REAL_SUBMIT=1`.
 
 ## 배포
 - GitHub Pages, `main` 브랜치 root 에서 배포. 푸시하면 1~2분 뒤 반영.
