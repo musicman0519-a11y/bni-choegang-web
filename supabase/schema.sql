@@ -174,4 +174,4 @@ create policy "admin delete media" on storage.objects for delete using (bucket_i
 
 -- ── 관리자 등록 ─────────────────────────────────────────────
 -- 아래 이메일을 어드민으로 로그인할 이메일로 바꾸세요. 여러 명이면 줄을 추가하세요.
-insert into public.admins (email, note) values ('admin@example.com', '최초 관리자') on conflict do nothing;
+insert into public.admins (email, note) values ('musicman0519@gmail.com', '최초 관리자') on conflict do nothing;
