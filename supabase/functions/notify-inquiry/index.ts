@@ -25,6 +25,7 @@ type Inquiry = {
   referrer?: string | null;
   message?: string | null;
   created_at?: string;
+  journey?: { channel_label?: string; entry_ref_host?: string; history?: string[]; page_views?: number; session_dwell_sec?: number; device?: string; in_app?: string } | null;
 };
 
 const env = (key: string) => (Deno.env.get(key) ?? "").trim();
@@ -49,6 +50,7 @@ async function sendEmail(row: Inquiry) {
     ["회사/소속", row.company],
     [row.kind === "visitor" ? "관심 업종" : "범위 · 분야", row.category],
     ["추천인", row.referrer],
+    ["유입 경로", row.journey ? [row.journey.channel_label, (row.journey.history ?? []).join(" → "), `${row.journey.session_dwell_sec ?? 0}초`, `${row.journey.device ?? ""}${row.journey.in_app ? ` (${row.journey.in_app} 앱)` : ""}`].filter(Boolean).join(" · ") : ""],
     ["접수 시각", timeKST(row.created_at)],
   ];
   const rows = fields

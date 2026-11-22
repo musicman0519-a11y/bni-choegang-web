@@ -363,6 +363,24 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
     }
   }
 
+
+  // ── 모바일 폭(390px) ───────────────────────────────────
+  for (const path of ["index.html", "experts.html", "blog/weekly-meeting-20260513/", "visitor.html", "contact.html"]) {
+    await test(`모바일 390px: ${path} 가로 스크롤 없음, 본문·버튼 보임`, async () => {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+      const errs = [];
+      page.on("pageerror", (e) => errs.push(e.message));
+      await page.goto(BASE + path, { waitUntil: "networkidle0", timeout: 60000 });
+      const w = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, inner: window.innerWidth, h1: !!document.querySelector("h1"), submit: !!document.querySelector('[type="submit"], .visitor-submit, .post-cta-button, .news-tile, [data-namecard]') }));
+      expect(w.scroll <= w.inner + 1, `scrollWidth ${w.scroll} > ${w.inner}`);
+      expect(w.h1 && w.submit, `h1=${w.h1} cta=${w.submit}`);
+      expect(errs.length === 0, errs.join(" | "));
+      await page.close();
+      return `${w.scroll}/${w.inner}`;
+    });
+  }
+
   // ── 옛 주소 리다이렉트 (공개 URL 에서만 404.html 이 동작) ──
   if (/github\.io|choegang\.co\.kr/.test(BASE)) {
     for (const [from, to] of [["blog/weekly-meeting-20260513", "blog/weekly-meeting-20260513/"], ["blog/no-such-post-xyz", "post.html?id=no-such-post-xyz"], ["members.html", "experts.html"], ["collaborate.html", "contact.html"], ["blogs.html", "blog.html"]]) {
