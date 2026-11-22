@@ -96,8 +96,10 @@ create table if not exists public.inquiries (
   message text check (message is null or char_length(message) <= 3000),
   status text not null default 'new' check (status in ('new', 'done')),
   memo text,
+  journey jsonb,  -- 방문 여정(채널·유입 출처·경로·체류·기기), journey.js 가 채움
   created_at timestamptz not null default now()
 );
+alter table public.inquiries add column if not exists journey jsonb;
 
 -- ── 보안 규칙(RLS) ──────────────────────────────────────────
 alter table public.admins enable row level security;

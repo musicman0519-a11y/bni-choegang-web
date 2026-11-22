@@ -119,7 +119,8 @@
       if (button) button.disabled = true;
       const data = Object.fromEntries(new FormData(form));
       const clean = (value) => (value || "").trim() || null;
-      const { error } = await sb.from("inquiries").insert({ kind, ...toRow(data, clean) });
+      const journey = window.getJourney?.() || null; // journey.js — 어디서 와서 어떤 경로로 신청했는지
+      const { error } = await sb.from("inquiries").insert({ kind, ...toRow(data, clean), journey });
       if (button) button.disabled = false;
       if (error) {
         console.error(error);

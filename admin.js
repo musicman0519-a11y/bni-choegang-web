@@ -134,6 +134,13 @@
       list.innerHTML = '<p class="empty">해당하는 문의가 없어요.</p>';
       return;
     }
+    // 이번 달 채널별 건수 요약
+    const month = new Date().toISOString().slice(0, 7);
+    const counts = {};
+    result.data.filter((i) => i.journey && String(i.created_at).startsWith(month)).forEach((i) => { const k = i.journey.channel_label || "기타"; counts[k] = (counts[k] || 0) + 1; });
+    const summary = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(" · ");
+    $("#inquirySummary").hidden = !summary;
+    $("#inquirySummary").textContent = summary ? `이번 달 유입: ${summary}` : "";
     list.innerHTML = result.data.map((item) => `
       <article class="inquiry ${item.status === "done" ? "is-done" : ""}" data-id="${item.id}">
         <header>
@@ -149,6 +156,7 @@
           ${item.referrer ? `<div><dt>추천인</dt><dd>${esc(item.referrer)}</dd></div>` : ""}
         </dl>
         ${item.message ? `<p class="message">${esc(item.message)}</p>` : ""}
+        ${item.journey ? `<details class="journey"><summary>유입 경로 · <b>${esc(item.journey.channel_label || window.classifyChannel?.(item.journey.entry_ref_host, item.journey.utm).label || "")}</b> · ${esc((item.journey.history || []).length || item.journey.page_views || 1)}페이지 · ${esc(item.journey.session_dwell_sec ?? 0)}초</summary><pre>${esc(window.formatJourney ? window.formatJourney(item.journey) : JSON.stringify(item.journey))}</pre></details>` : ""}
         <footer>
           <input class="memo" value="${esc(item.memo || "")}" placeholder="메모 (예: 10/15 통화 완료)" aria-label="메모" />
           <button class="btn btn-line" type="button" data-action="toggle">${item.status === "done" ? "새 문의로 되돌리기" : "처리 완료"}</button>

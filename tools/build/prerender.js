@@ -290,7 +290,7 @@ for (const m of members) {
   ])];
   const meta = metaBlock({ title, description, canonical, image: url(memberPhoto(m)), type: "profile", imageAlt: `${m.name} ${role}` });
   let html = injectHead(postTemplate, { title, description, meta, ld });
-  html = html.replace(/<script src="site-data\.js[^>]*data-scripts="[^"]*"><\/script>/, (s) => s.replace(/data-scripts="[^"]*"/, 'data-scripts="experts.js?v=10 app.js?v=14 namecard.js?v=5 menu.js?v=1"'));
+  html = html.replace(/<script src="site-data\.js[^>]*data-scripts="[^"]*"><\/script>/, (s) => s.replace(/data-scripts="[^"]*"/, 'data-scripts="journey.js?v=1 experts.js?v=10 app.js?v=15 namecard.js?v=5 menu.js?v=1"'));
   html = html.replace(/<a class="active" href="blog\.html" aria-current="page">최강챕터 뉴스<\/a>/, '<a href="blog.html">최강챕터 뉴스</a>').replace(/<a href="experts\.html">전문가 찾기<\/a>/, '<a class="active" href="experts.html" aria-current="page">전문가 찾기</a>');
   html = staticShell(html, { base: "../../", postId: "", bodyHtml: memberArticle(m), articleAttrs: ' id="memberPage"' });
   html = html.replace(/href="#main"/g, `href="${pagePath}#main"`);

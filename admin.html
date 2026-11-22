@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="admin.css?v=4" />
     <script src="supabase-config.js?v=1"></script>
     <script src="admin-demo.js?v=2"></script>
-    <script src="site-data.js?v=1" defer data-scripts="experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=6"></script>
+    <script src="site-data.js?v=1" defer data-scripts="journey.js?v=1 experts.js?v=10 body-format.js?v=1 blog-data.js?v=2 blog-legacy.js?v=2 admin.js?v=7"></script>
   </head>
   <body>
     <!-- 로그인 -->
@@ -69,6 +69,7 @@
             <select id="inquiryStatus" aria-label="처리 상태"><option value="">전체 상태</option><option value="new" selected>새 문의</option><option value="done">처리 완료</option></select>
           </div>
         </div>
+        <p class="inquiry-summary" id="inquirySummary" hidden></p>
         <div class="inquiry-list" id="inquiryList"></div>
       </section>
 

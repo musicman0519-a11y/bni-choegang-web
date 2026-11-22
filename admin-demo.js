@@ -18,8 +18,10 @@
       { date: "2026-11-11", type: "online", label: "화상회의", note: null },
     ],
     inquiries: [
-      { id: "q1", kind: "visitor", name: "홍길동", phone: "010-1234-5678", email: "hong@example.com", company: "길동상사", category: "Medical", referrer: "이경세", message: "다음 주 수요일 조찬모임에 참관하고 싶습니다. 주차 가능한가요?", status: "new", memo: null, created_at: ago(35) },
-      { id: "q2", kind: "collab", name: "김협업", phone: "010-2222-3333", email: null, company: "글로벌무역", category: "해외 / Consultant", referrer: null, message: "베트남 진출 관련해서 법률·세무 전문가 연결을 원합니다.", status: "new", memo: null, created_at: ago(180) },
+      { id: "q1", kind: "visitor", name: "홍길동", phone: "010-1234-5678", email: "hong@example.com", company: "길동상사", category: "Medical", referrer: "이경세", message: "다음 주 수요일 조찬모임에 참관하고 싶습니다. 주차 가능한가요?", status: "new", memo: null, created_at: ago(35),
+        journey: { v: 1, channel: "naver", channel_label: "네이버", entry_ref_host: "m.search.naver.com", entry_path: "/about.html", prev_path: "/about.html", current_path: "/visitor.html", history: ["/about.html", "/visitor.html"], page_views: 2, session_dwell_sec: 116, page_dwell_sec: 53, device: "mobile", in_app: "네이버", utm: {} } },
+      { id: "q2", kind: "collab", name: "김협업", phone: "010-2222-3333", email: null, company: "글로벌무역", category: "해외 / Consultant", referrer: null, message: "베트남 진출 관련해서 법률·세무 전문가 연결을 원합니다.", status: "new", memo: null, created_at: ago(180),
+        journey: { v: 1, channel: "direct", channel_label: "직접 입력 · 즐겨찾기 · 명함 QR", entry_ref_host: "", entry_path: "/", prev_path: "/experts.html", current_path: "/contact.html", history: ["/", "/experts.html", "/contact.html"], page_views: 3, session_dwell_sec: 240, page_dwell_sec: 90, device: "desktop", in_app: "", utm: {} } },
       { id: "q3", kind: "visitor", name: "이참관", phone: "010-4444-5555", email: null, company: null, category: "Architecture & Interior", referrer: null, message: null, status: "done", memo: "10/8 통화 완료, 10/15 참석 예정", created_at: ago(4000) },
     ],
   };

@@ -252,6 +252,43 @@ const expect = (cond, msg) => { if (!cond) throw new Error(msg); };
   });
 
 
+
+  // ── 방문 여정 기록 (journey.js) ──────────────────────
+  await test("여정 기록: 홈 → 소개 → 참관 신청 이동 후 getJourney 가 경로 3개·진입 /·직전 /about.html 을 돌려준다", async () => {
+    const page = await open("index.html");
+    await page.goto(BASE + "about.html", { waitUntil: "networkidle0" });
+    await page.goto(BASE + "visitor.html", { waitUntil: "networkidle0" });
+    const j = await page.evaluate(() => window.getJourney && window.getJourney());
+    expect(j, "getJourney 없음");
+    expect(j.entry_path === "/" || j.entry_path === "/index.html", "entry " + j.entry_path);
+    expect(j.history.length === 3 && j.page_views === 3, JSON.stringify(j.history));
+    expect(j.prev_path === "/about.html" && /visitor\.html$/.test(j.current_path), `${j.prev_path} → ${j.current_path}`);
+    expect(typeof j.session_dwell_sec === "number" && j.channel && j.channel_label, "요약 필드");
+    await page.close();
+    return `${j.channel_label}, ${j.device}`;
+  });
+  await test("여정 기록: ?journey=off 면 getJourney 가 null, ?journey=on 으로 복구", async () => {
+    const page = await open("index.html?journey=off");
+    const off = await page.evaluate(() => window.getJourney());
+    await page.goto(BASE + "index.html?journey=on", { waitUntil: "networkidle0" });
+    const on = await page.evaluate(() => window.getJourney());
+    expect(off === null && on && on.page_views >= 1, `off=${JSON.stringify(off)} on=${!!on}`);
+    await page.close();
+  });
+  await test("관리자(데모): 문의 카드에 '유입 경로' 블록 2건, 펼치면 8줄 요약, 상단에 이번 달 채널 요약", async () => {
+    const page = await open("admin.html?demo");
+    await page.waitForFunction(() => document.querySelectorAll("#inquiryList .journey").length >= 2, { timeout: 15000 });
+    const n = await count(page, "#inquiryList .journey");
+    await page.click("#inquiryList .journey summary");
+    const lines = await page.$eval("#inquiryList .journey pre", (el) => el.textContent.trim().split("\n").length);
+    const summary = await page.$eval("#inquirySummary", (el) => ({ hidden: el.hidden, text: el.textContent }));
+    expect(n === 2, `블록 ${n}개`);
+    expect(lines === 8, `${lines}줄`);
+    expect(!summary.hidden && /이번 달 유입/.test(summary.text), JSON.stringify(summary));
+    await page.close();
+    return summary.text;
+  });
+
   // ── 실 DB 모드 (supabase-config.js 에 연결 정보가 있을 때만) ──
   {
     const probe = await open("index.html");
