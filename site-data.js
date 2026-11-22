@@ -3,7 +3,7 @@
 // data-scripts 에 적힌 페이지 스크립트를 순서대로 실행합니다.
 // 연결 정보가 없거나 불러오기에 실패하면 각 스크립트에 들어 있는 기본 데이터로 동작합니다.
 (() => {
-  const SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+  const SDK_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.min.js";
   const me = document.currentScript;
   const pageScripts = (me?.dataset.scripts || "").split(/\s+/).filter(Boolean);
   const configured = Boolean(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
