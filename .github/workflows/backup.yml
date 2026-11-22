@@ -1,0 +1,32 @@
+# 주간 DB 백업 — 공개 읽기가 허용된 표 4개(members·posts·banners·schedule)를 JSON 으로 받아 Actions artifact(90일 보관)에 둡니다.
+# 문의(inquiries)는 개인정보라 공개 저장소의 artifact 에 넣지 않습니다(공개 저장소 artifact 는 누구나 내려받을 수 있음).
+# 키·주소는 supabase-config.js 의 공개 키를 씁니다. 수동 실행: Actions → DB backup → Run workflow.
+name: DB backup
+on:
+  schedule:
+    - cron: "0 20 * * 0" # 매주 월요일 05:00 KST
+  workflow_dispatch:
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export public tables
+        run: |
+          URL=$(grep -oE 'SUPABASE_URL\s*=\s*"[^"]+"' supabase-config.js | sed -E 's/.*"([^"]+)"/\1/')
+          KEY=$(grep -oE 'SUPABASE_ANON_KEY\s*=\s*"[^"]+"' supabase-config.js | sed -E 's/.*"([^"]+)"/\1/')
+          [ -n "$URL" ] && [ -n "$KEY" ] || { echo "연결 정보 없음"; exit 1; }
+          mkdir -p backup
+          for T in members posts banners schedule; do
+            CODE=$(curl -s -o "backup/$T.json" -w "%{http_code}" "$URL/rest/v1/$T?select=*&limit=1000" -H "apikey: $KEY" -H "Range: 0-999")
+            N=$(python3 -c "import json;print(len(json.load(open('backup/$T.json'))))" 2>/dev/null || echo "?")
+            echo "$T: HTTP $CODE, $N rows"
+            [ "$CODE" = "200" ] || [ "$CODE" = "206" ] || exit 1
+          done
+          cp supabase/schema.sql backup/
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > backup/exported_at.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backup/
+          retention-days: 90
